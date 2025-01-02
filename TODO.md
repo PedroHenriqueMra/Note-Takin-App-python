@@ -1,22 +1,21 @@
-# Note takin app
+# How going to work:
+The program is a notepad which allows the user to create texts and generate text's notes.
 
-## work layer
-**a layer to manager the system -> manager all objects, classes, db, evrything...**
+## DataBase
+- **there will 3 db layers**
+    - *(NoSQL)*
+        - A table for save system settings (GUI settings, auto save...)
+        - A table to save tabs that have not been closed from the screen
+            - link id
+    - *(SQL)*
+        - First table: a table to save the user texts
+            - id, type (txt), title, content, date infos
 
-## GUI layer (Feedback for user)
-### Libs:
-- kivy (Desktop application)
+        - Second table: a table to user annotations
+            - id, type (note), reference, content, date infos
 
+        - Third table: a table for links that will join the texts and annotations of the respective texts
+            - link id (primary key),text id, annotation ids (one to many)
 
-## DB layer (Local db)
-**sqlite to -> saved settings, current directory, current file**
-- no ORM (with sqlite3 lib)
-
-## create, write and read archives (Archives handler base)
-- A class to manipulate archives
-
-## notation system
-**a system for creating notations that can explain your text or an piece of text**
-- create a class to manage it
-- create a folder to save the files that will keep the notations (the user will can to choose the path this directory)
-- create a kind of pointer that will contain the links to relate file text and file notation (like this: file notation "<- file link ->" file text)
+## Work layer
+**A system manager**

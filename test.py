@@ -1,9 +1,6 @@
-from arch_work.file_work import *
-from arch_work.notations.notations import *
+from db_manager.repository.text import ADMText
 
 # directory = "C:\\Users\\pedro\\OneDrive\\Documentos\\note-takin-app\\file-test"
 
-## fh File_Tasks class (class-dady) tests:
-
-note = Notations()
+text = ADMText()
 
