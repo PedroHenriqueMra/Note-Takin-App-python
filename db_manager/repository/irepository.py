@@ -1,22 +1,14 @@
 from abc import ABC, abstractmethod
 
-class IRepository(ABC):
+class IRepository[T](ABC):
+    @abstractmethod
+    def add(self, values:T) -> T:
+        raise NotImplemented()
+
+    @abstractmethod
+    def get_by_id(self, id:int) -> T:
+        raise NotImplemented()
     
-    def __init__(self):
-        self.__create_table()
-
     @abstractmethod
-    def __create_table(self):
-        pass
-
-    @abstractmethod
-    def add(self, content:dict) -> str:
-        pass
-
-    @abstractmethod
-    def remove(self, id) -> str:
-        pass
-
-    @abstractmethod
-    def get_by_id(self, id) -> str:
-        pass
+    def remove_by_id(self, id:int) -> str:
+        raise NotImplemented()
