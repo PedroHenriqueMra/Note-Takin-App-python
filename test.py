@@ -1,11 +1,20 @@
-from db_manager.repository.dataclasses.system_data import *
-from db_manager.repository.text_adm import ADMText
+from data.system_data import *
+from db_manager.repository.note import ADMNote
+from db_manager.repository.text import ADMText
+from db_manager.repository.link_handler import ADMLink
 
-# directory = "C:\\Users\\pedro\\OneDrive\\Documentos\\note-takin-app\\file-test"
+# Test ADMText
 
 text = ADMText()
-txt = Text("title", "cpntent")
-# text.add(txt)
-# text.add(txt)
-text.remove_by_id(6)
-# text.get_by_id(1)
+txt = Text("titleTest", "COntentslda")
+# text.add_row(txt)
+
+# Test ADMNote
+
+note = ADMNote()
+# nt = Note(reference="lalal", content="lalla")
+# note.delete_by_id(1)
+# note.add_row(nt)
+
+# Test link
+link = ADMLink()

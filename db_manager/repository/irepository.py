@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 class IRepository[T](ABC):
     @abstractmethod
-    def add(self, values:T) -> T:
+    def add_row(self, values:T) -> T:
         raise NotImplemented()
 
     @abstractmethod
-    def get_by_id(self, id:int) -> T:
+    def get_by_id(self, id:int) -> Optional[T]:
         raise NotImplemented()
     
     @abstractmethod
-    def remove_by_id(self, id:int) -> str:
+    def delete_by_id(self, id:int|str) -> bool:
         raise NotImplemented()

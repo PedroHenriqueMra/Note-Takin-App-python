@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from uuid import UUID
+from uuid import uuid4
 
 @dataclass
 class Text:
@@ -8,13 +10,18 @@ class Text:
     edit_date:str = None
     type:str = "text"
 
-    def response_error(msg=None) -> str|None:
-        return msg if msg != None else ""
-
 @dataclass
 class Note:
     reference:str
     content:str | None
-    create_date:str | None
-    edit_date:str | None
+    create_date:str = None
+    edit_date:str = None
     type:str = "note"
+
+@dataclass
+class Link:
+    # foreign key
+    text_id:int
+    note_id:int
+    # UUID
+    id:UUID = uuid4()
