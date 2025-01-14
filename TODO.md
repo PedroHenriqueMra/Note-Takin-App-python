@@ -6,7 +6,7 @@ The program is a notepad which allows the user to create texts and generate text
     - *(NoSQL)*
         - A table for save system settings (font size, other GUI settings...)
         - A table to save tabs that have not been closed from the screen
-            - link id, last view
+            - link id, last view, content edited unsaved, opened (this bool field will inform if the tab is open or closed and will be cleaned from the database)
     - *(SQL)*
         - First table: a table to save the user texts
             - id, type (txt), title, content, create date, edit date

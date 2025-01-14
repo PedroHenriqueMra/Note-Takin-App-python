@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 
 class IRepository[T](ABC):
     @abstractmethod
@@ -7,9 +7,13 @@ class IRepository[T](ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def get_by_id(self, id:int) -> Optional[T]:
+    def get_by_id(self, id:int|str) -> Optional[T]:
         raise NotImplemented()
     
     @abstractmethod
     def delete_by_id(self, id:int|str) -> bool:
+        raise NotImplemented()
+    
+    @abstractmethod
+    def update(self, id:int|str, field:str, value:Any) -> Optional[T]:
         raise NotImplemented()
