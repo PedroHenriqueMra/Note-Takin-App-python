@@ -38,7 +38,7 @@ class ADMLink(IRepository[Link]):
 
             return values
 
-    def get_by_id(self, id:int) -> Optional[Link]:
+    def get(self, id:int) -> Optional[Link]:
         with db_connection() as cur:
             query = "SELECT * FROM link WHERE id=?"
             result = cur.execute(query, (id,)).fetchone()
@@ -60,7 +60,7 @@ class ADMLink(IRepository[Link]):
                 logging.info(f"An unexpected error was throw. Message: {err}")
                 return None
 
-    def delete_by_id(self, id:int|str) -> bool:
+    def delete(self, id:int|str) -> bool:
         with db_connection(change=True) as cur:
             count_table_query = "SELECT COUNT(*) FROM link"
             count_before = cur.execute(count_table_query).fetchone()[0]

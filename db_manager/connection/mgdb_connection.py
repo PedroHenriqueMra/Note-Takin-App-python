@@ -1,11 +1,33 @@
 from pymongo import MongoClient
-
-uri = "mongodb://127.0.0.1:27017"
-client = MongoClient(uri)
-
-db = client["test-database"]
-
-collection = db["teste-collection"]
+from bson.objectid import ObjectId
+from contextlib import contextmanager
 
 
-print(collection)
+class MongoDBConnection:
+    def __init__(self):
+        self.connection_string = "mongodb://127.0.0.1:27017"
+        self.database_name = "note_takin_database"
+        self.connection = None
+
+    @contextmanager
+    def context_database(self):
+        try:
+            print("-> connecting NoSQL database...")
+            client = self.get_connection()
+            yield client
+        finally:
+            print("-> closing NoSQL database...")
+            self.close_connection()
+
+    def get_connection(self):
+        client = MongoClient(self.connection_string)
+        self.connection = client
+
+        database = client[self.database_name]
+        return database
+    
+    def close_connection(self):
+        self.connection.close()
+        self.connection = None
+
+mongo_database = MongoDBConnection()

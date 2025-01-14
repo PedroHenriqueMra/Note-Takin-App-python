@@ -35,7 +35,7 @@ class ADMText(IRepository[Text]):
 
             return Text (title=values.title,content=values.content,create_date=get_date_now,edit_date=get_date_now)
 
-    def get_by_id(self, id:int) -> Optional[Text]:
+    def get(self, id:int) -> Optional[Text]:
         with db_connection() as cur:
             # 0:id, 1:type, 2:title, 3:content, 4:create_date, 5:edit_date
             query = cur.execute("SELECT * FROM text WHERE id=?", (id,)).fetchone()
@@ -44,7 +44,7 @@ class ADMText(IRepository[Text]):
 
             return None
 
-    def delete_by_id(self, id:int) -> bool:
+    def delete(self, id:int) -> bool:
         with db_connection(change=True) as cur:
             count_table_query = "SELECT COUNT(*) FROM text"
             count_before = cur.execute(count_table_query).fetchone()[0]

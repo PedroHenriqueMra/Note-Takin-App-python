@@ -7,11 +7,11 @@ class IRepository[T](ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def get_by_id(self, id:int|str) -> Optional[T]:
+    def get(self, id:int|str) -> Optional[T]:
         raise NotImplemented()
     
     @abstractmethod
-    def delete_by_id(self, id:int|str) -> bool:
+    def delete(self, id:int|str) -> bool:
         raise NotImplemented()
     
     @abstractmethod

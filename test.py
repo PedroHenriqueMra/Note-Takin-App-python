@@ -25,8 +25,8 @@ link = ADMLink()
 # ADMLink.delete_associations(2)
 
 
-# class TestStringMethods(unittest.TestCase):
-    
+class TestStringMethods(unittest.TestCase):
+    pass
 
-# if __name__ == "__main__":
-#     unittest.main()
+if __name__ == "__main__":
+    unittest.main()
