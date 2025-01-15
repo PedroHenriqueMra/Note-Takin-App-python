@@ -6,15 +6,15 @@ from contextlib import contextmanager
 class MongoDBConnection:
     def __init__(self):
         self.connection_string = "mongodb://127.0.0.1:27017"
-        self.database_name = "note_takin_database"
+        self.collection_name = "note_takin_database"
         self.connection = None
 
     @contextmanager
     def context_database(self):
         try:
             print("-> connecting NoSQL database...")
-            client = self.get_connection()
-            yield client
+            connection = self.get_connection()
+            yield connection
         finally:
             print("-> closing NoSQL database...")
             self.close_connection()
@@ -23,7 +23,7 @@ class MongoDBConnection:
         client = MongoClient(self.connection_string)
         self.connection = client
 
-        database = client[self.database_name]
+        database = client[self.collection_name]
         return database
     
     def close_connection(self):
