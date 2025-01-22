@@ -1,5 +1,5 @@
 from sqlite3 import OperationalError
-from db_manager.connection.sqlite_connection import db_connection
+from db_manager.connection.sqlite_connection import sqlite
 from uuid import UUID
 from typing import List
 
@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 def row_exists(table_name:str, primary_key:UUID | int) -> bool:
-    with db_connection() as cur:
+    with sqlite.db_connection() as cur:
         try:
             query = f"SELECT * FROM {table_name} WHERE id=?"
             exist = cur.execute(query, (primary_key,)).fetchone()
@@ -23,7 +23,7 @@ def all_row_exists(table_name:List[str], primary_key:List[str|int]) -> bool:
     if len(table_name) != len(primary_key):
         return False
     
-    with db_connection() as cur:
+    with sqlite.db_connection() as cur:
         for t, p_key in zip(table_name, primary_key):
             try:
                 query = f"SELECT * FROM {t} WHERE id=?"

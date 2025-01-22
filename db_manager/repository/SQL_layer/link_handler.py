@@ -2,19 +2,17 @@ import json
 from sqlite3 import OperationalError
 from typing import Any, Optional
 from db_manager.repository.irepository import IRepository
-from data.system_data import Link
+from data.SQL_table_data import Link
 from utils.row_exists import all_row_exists
-from db_manager.repository.SQL_layer.note_db import ADMNote
+from ...connection.sqlite_connection import sqlite
 
 # show info
 import logging
 logging.basicConfig(level=logging.INFO)
 
-from db_manager.connection.sqlite_connection import db_connection
-
 class ADMLink(IRepository[Link]):
     def __init__(self):
-        with db_connection(change=True) as cur:
+        with sqlite.db_connection(change=True) as cur:
             create_table_query = """
             CREATE TABLE IF NOT EXISTS link (
             id VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
@@ -29,7 +27,7 @@ class ADMLink(IRepository[Link]):
         if not all_row_exists(["text", "note"], [values.text_id, values.note_id]):
             return values
         
-        with db_connection(change=True) as cur:
+        with sqlite.db_connection(change=True) as cur:
             inject_data = (str(values.id), values.text_id, json.dumps([values.note_id]))
             insert = "INSERT INTO link VALUES(?, ?, ?)"
             cur.execute(insert, inject_data)
@@ -39,7 +37,7 @@ class ADMLink(IRepository[Link]):
             return values
 
     def get(self, id:int) -> Optional[Link]:
-        with db_connection() as cur:
+        with sqlite.db_connection(change=True) as cur:
             query = "SELECT * FROM link WHERE id=?"
             result = cur.execute(query, (id,)).fetchone()
             if result != None:
@@ -48,7 +46,7 @@ class ADMLink(IRepository[Link]):
         return None
     
     def get_by_field(self, field:str, key:int|str) -> Optional[Link]:
-        with db_connection() as cur:
+        with sqlite.db_connection(change=True) as cur:
             try:
                 valid_fields = ["id", "text_id", "note_id"]
                 if field not in valid_fields:
@@ -61,7 +59,7 @@ class ADMLink(IRepository[Link]):
                 return None
 
     def delete(self, id:int|str) -> bool:
-        with db_connection(change=True) as cur:
+        with sqlite.db_connection(change=True) as cur:
             count_table_query = "SELECT COUNT(*) FROM link"
             count_before = cur.execute(count_table_query).fetchone()[0]
 
@@ -81,7 +79,7 @@ class ADMLink(IRepository[Link]):
 
         link = cls.get_by_field(self=cls, field="text_id", key=text_id)
         if link is not None:
-            with db_connection(change=True) as cur:
+            with sqlite.db_connection(change=True) as cur:
                 # delete text
                 cur.execute("DELETE FROM text WHERE id=?", (link[1],))
 
@@ -90,7 +88,7 @@ class ADMLink(IRepository[Link]):
                     cur.execute("DELETE FROM note WHERE id=?", (note_id,))
 
             # delete link table
-            cls.delete_by_id(self=cls, id=link[0])
+            cls.delete(self=cls, id=link[0])
 
     def update(self, id:int|str, field:str, value:Any) -> Optional[Link]:
         pass
