@@ -1,7 +1,7 @@
 from data.settings_data import Settings
 from db_manager.connection.mgdb_connection import mongo_connection
 from typing import Any, Dict, Optional, Union
-from utils.find_dict import find_first_key
+from utils.find_dict import get_dict_path_by_key
 # Get 'Database' type
 from pymongo.database import Database
 from pymongo.collection import Collection
@@ -71,7 +71,7 @@ class ConfigDB:
 
                 if parsed_settings.change_property(key_sett, val):
                     filter = {"_id":settings_id}
-                    key_path = find_first_key(parsed_settings.get_settings(), key_sett)
+                    key_path = get_dict_path_by_key(parsed_settings.get_settings(), key_sett)
                     print(f"key path: {key_path}")
                     new_value = {"$set": {key_path:val}}
                     collection.update_one(filter, new_value)
