@@ -1,6 +1,6 @@
 from db_manager.repository.irepository import IRepository
 from typing import Any, Optional
-from db_manager.repository.SQL_layer.link_handler import ADMLink
+from db_manager.repository.sql_repository_layer.link_handler import ADMLink
 from utils.date_now import date_now
 from ...connection.sqlite_connection import sqlite
 
@@ -8,7 +8,7 @@ from ...connection.sqlite_connection import sqlite
 import logging
 logging.basicConfig(level=logging.INFO)
 
-from data.SQL_table_data import Text
+from system_data.sql_tables_data import Text
 
 class ADMText(IRepository[Text]):
     def __init__(self):

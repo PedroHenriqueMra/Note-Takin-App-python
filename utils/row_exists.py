@@ -35,7 +35,3 @@ def all_row_exists(table_name:List[str], primary_key:List[str|int]) -> bool:
                 return False
     
     return True
-                
-
-
-

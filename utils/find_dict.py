@@ -15,7 +15,6 @@ def get_dict_path_by_key(d_base:dict, find_key:str):
         route_path.append(k)
         if k == find_key:
             yield generate_nested_dict(route_path)
-            continue
 
         if isinstance(v, dict):
             res = yield from iter_in_nested_dict(v, find_key, route_path)
@@ -28,7 +27,6 @@ def iter_in_nested_dict(d_nested:dict, found_key:str, cur_path:list):
         if k == found_key:
             cur_path.append(k)
             yield generate_nested_dict(cur_path)
-            continue
 
         if isinstance(v, dict):
             # Save current path and get in the next nested dict

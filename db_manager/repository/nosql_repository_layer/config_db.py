@@ -1,4 +1,4 @@
-from data.settings_data import Settings
+from system_data.settings_data import Settings
 from db_manager.connection.mgdb_connection import mongo_connection
 from typing import Any, Dict, Optional, Union
 from utils.find_dict import get_dict_path_by_key
@@ -34,11 +34,16 @@ class ConfigDB:
         
         return settings
         
-    def find_settings(self, id:Union[str, ObjectId]) -> Optional[dict]:
+    def find_settings(self, id:Union[str, ObjectId]) -> Optional[Settings]:
         collection = self.collection
         id = ObjectId(id) if type(id) != ObjectId else id
         
-        return collection.find_one({"_id": id})
+        find = collection.find_one({"_id": id})
+        if find == None:
+            return None
+
+        find = Settings.parse(find)
+        return find
         
     # Create a default settings
     def create_settings(self) -> dict:
@@ -72,7 +77,7 @@ class ConfigDB:
                 if parsed_settings.change_property(key_sett, val):
                     filter = {"_id":settings_id}
                     key_path = get_dict_path_by_key(parsed_settings.get_settings(), key_sett)
-                    print(f"key path: {key_path}")
+                    key_path = next(key_path)
                     new_value = {"$set": {key_path:val}}
                     collection.update_one(filter, new_value)
 

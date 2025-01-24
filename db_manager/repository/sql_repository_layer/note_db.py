@@ -7,7 +7,7 @@ from ...connection.sqlite_connection import sqlite
 import logging
 logging.basicConfig(level=logging.INFO)
 
-from data.SQL_table_data import Note
+from system_data.sql_tables_data import Note
 
 class ADMNote(IRepository[Note]):
     def __init__(self):

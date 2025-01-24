@@ -2,7 +2,7 @@ import json
 from sqlite3 import OperationalError
 from typing import Any, Optional
 from db_manager.repository.irepository import IRepository
-from data.SQL_table_data import Link
+from system_data.sql_tables_data import Link
 from utils.row_exists import all_row_exists
 from ...connection.sqlite_connection import sqlite
 

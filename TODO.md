@@ -1,4 +1,4 @@
-# How going to work:
+# How it will to work:
 The program is a notepad which allows the user to create texts and generate text's notes.
 
 ## DataBase
@@ -17,5 +17,3 @@ The program is a notepad which allows the user to create texts and generate text
         - Third table: a table for links that will join the texts and annotations of the respective texts
             - link id (PK),text id, annotation ids (one to many)
 
-## Work layer
-**A system manager**

@@ -1,7 +1,5 @@
-from dataclasses import dataclass, field
-import time
+from dataclasses import dataclass
 from typing import Any, Optional
-from bson.objectid import ObjectId
 
 
 @dataclass
