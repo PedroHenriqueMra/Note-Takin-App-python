@@ -1,13 +1,15 @@
 from system_data.settings_data import Settings
 from db_manager.connection.mgdb_connection import mongo_connection
 from typing import Any, Dict, Optional, Union
-from utils.find_dict import get_dict_path_by_key
+from utils.find_dict import find_keypath
 # Get 'Database' type
 from pymongo.database import Database
 from pymongo.collection import Collection
 
 from bson.objectid import ObjectId
 
+import logging
+logging.basicConfig(level=logging.INFO)
 
 class ConfigDB:
 
@@ -57,8 +59,8 @@ class ConfigDB:
 
     def edit_settings(self, settings_id:Union[str, ObjectId], new_settings:Dict[str, Any]) -> Settings:
         settings_id = ObjectId(settings_id) if type(settings_id) != ObjectId else settings_id
-
         collection = self.collection
+        
         # Get user data in db
         get_settings = collection.find_one({"_id":settings_id})
         if get_settings == None:
@@ -70,15 +72,18 @@ class ConfigDB:
             raise Exception(f"Settings wasn't changed. Some object key was with wrong name!")
         
         # logic to upadate data:
-        for key_sett in new_settings.keys():
-            if key_sett in parsed_settings.get_settings().keys():
-                val = new_settings[key_sett]
-
-                if parsed_settings.change_property(key_sett, val):
+        for key_sett, val_sett in new_settings.items():
+            
+            if hasattr(Settings, key_sett):
+                if parsed_settings.change_property(key_sett, val_sett):
+                    key_path = find_keypath(
+                        parsed_settings.get_dict_structure(),
+                        key_sett)
                     filter = {"_id":settings_id}
-                    key_path = get_dict_path_by_key(parsed_settings.get_settings(), key_sett)
-                    key_path = next(key_path)
-                    new_value = {"$set": {key_path:val}}
-                    collection.update_one(filter, new_value)
+                    new_value = {"$set": {str(key_path):val_sett}}
+
+                    change = collection.update_one(filter, new_value, upsert=False)
+                    if change != None:
+                        logging.info(f"{key_sett} Modified successfuly")
 
         return parsed_settings

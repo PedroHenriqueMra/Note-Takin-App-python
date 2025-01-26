@@ -11,14 +11,18 @@ def suite():
     suite = unittest.TestSuite()
 
     # utils test functions
-    suite.addTest(TestUtils("test_get_path_of_a_key"))
+    # suite.addTest(TestUtils("test_get_path_of_a_key"))
 
     # sql test functions
     # suite.addTest()
 
     # no-sql test functions
-    # suite.addTest(TestSettingsDB("test_edit_settings_data_in_db"))
-    # suite.addTest(TestSettingsDB("to_list"))
+    # suite.addTest(TestSettingsDB("create_sett"))
+    suite.addTest(TestSettingsDB("to_list"))
+    suite.addTest(TestSettingsDB("test_edit_settings_data_in_db"))
+
+    # contracts tests
+    # suite.addTest()
     
     return suite
 
