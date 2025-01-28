@@ -1,11 +1,14 @@
 from sqlite3 import OperationalError
-from db_manager.connection.sqlite_connection import sqlite
+from db_manager.connection.sqlite_connection import SqliteDB
 from uuid import UUID
 from typing import List
 
-# show info
+# Show info
 import logging
 logging.basicConfig(level=logging.INFO)
+
+# Sqlite instance
+sqlite = SqliteDB()
 
 def row_exists(table_name:str, primary_key:UUID | int) -> bool:
     with sqlite.db_connection() as cur:

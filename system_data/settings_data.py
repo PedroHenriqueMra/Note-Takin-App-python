@@ -55,7 +55,6 @@ class Settings():
         # change value property
         setattr(self, prop, value)
 
-        # print("Prop changed successfuly")
         return True
 
     @classmethod

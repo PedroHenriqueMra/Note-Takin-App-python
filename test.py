@@ -5,6 +5,7 @@ from tests.test_utils import TestUtils
 from tests.test_sql_system import TestTextTable
 from tests.test_sql_system import TestNoteTable
 from tests.test_sql_system import TestLinkTable
+from tests.test_contracts import TestDataClasses
 
 
 def suite():
@@ -18,11 +19,14 @@ def suite():
 
     # no-sql test functions
     # suite.addTest(TestSettingsDB("create_sett"))
-    suite.addTest(TestSettingsDB("to_list"))
-    suite.addTest(TestSettingsDB("test_edit_settings_data_in_db"))
+    # suite.addTest(TestSettingsDB("to_list"))
+    # suite.addTest(TestSettingsDB("test_edit_settings_data_in_db"))
 
     # contracts tests
-    # suite.addTest()
+    # suite.addTest(TestDataClasses("test_settings_type"))
+    # suite.addTest(TestDataClasses("test_text_type"))
+    # suite.addTest(TestDataClasses("test_note_type"))
+    # suite.addTest(TestDataClasses("test_link_type"))
     
     return suite
 

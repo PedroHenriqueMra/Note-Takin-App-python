@@ -1,7 +1,7 @@
 import unittest
 
 from system_data.settings_data import Settings
-from db_manager.repository.nosql_repository_layer.config_db import ConfigDB
+from db_manager.repository.nosql_repository.config_db import ConfigDB
 
 from bson.objectid import ObjectId
 
@@ -24,7 +24,7 @@ class TestSettingsDB(unittest.TestCase):
             print(sett)
 
     def create_sett(self):
-        return self.config.create_settings()
+        return self.config.create_default_settings()
     
     def test_edit_settings_data_in_db(self):
         # Get id

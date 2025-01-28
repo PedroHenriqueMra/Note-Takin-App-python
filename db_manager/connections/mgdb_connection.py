@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from contextlib import contextmanager
-from utils.singleton import Singleton
 from pymongo.database import Database
 
 
@@ -23,7 +22,8 @@ class MongoDBConnection:
 
     def get_connection(self) -> Database:
         client = MongoClient(self.connection_string)
-        self.client_connection = client
+        if self.client_connection is None:
+            self.client_connection = client
 
         database = client[self.collection_name]
         return database
@@ -32,6 +32,6 @@ class MongoDBConnection:
         self.client_connection.close()
         self.client_connection = None
 
-mongo_database = MongoDBConnection()
-# pool conection
-mongo_connection = mongo_database.get_connection()
+
+mongodb = MongoDBConnection()
+mongo_conn = mongodb.get_connection()
