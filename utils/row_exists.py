@@ -1,5 +1,5 @@
 from sqlite3 import OperationalError
-from db_manager.connection.sqlite_connection import SqliteDB
+from db_manager.connections.sqlite_connection import SqliteDB
 from uuid import UUID
 from typing import List
 

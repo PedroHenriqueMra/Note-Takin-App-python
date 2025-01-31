@@ -5,6 +5,8 @@ from db_manager.repository.nosql_repository.config_db import ConfigDB
 
 from bson.objectid import ObjectId
 
+from db_manager.repository.db_services.sql_getter import DataGetter
+from db_manager.repository.nosql_repository.table_handler_db import TableHandlerDB
 
 class TestSettingsDB(unittest.TestCase):
     config = ConfigDB()
@@ -54,3 +56,12 @@ class TestSettingsDB(unittest.TestCase):
         
         print("---- new data: ----")
         print(self.config.find_settings(id).get_dict_structure())
+
+
+    def test_get_link_data(self):
+        service = DataGetter()
+        repository = TableHandlerDB(service)
+
+        data = repository.get_link_data("f504a5cd-2fd7-46f1-91ac-dc5c4dbb81df")
+        
+        print(data)

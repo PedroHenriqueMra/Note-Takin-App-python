@@ -33,6 +33,7 @@ class ADMNote(IRepository[Note]):
         self.cursor.execute(insert, data)
         logging.info(f"Item added: reference: {values.reference} Content: {values.content}")
 
+        sqlite_conn.commit()
         return Note (reference=values.reference,content=values.content,create_date=get_date_now,edit_date=get_date_now)
 
     def get(self, id:int) -> Optional[Note]:

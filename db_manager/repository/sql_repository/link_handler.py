@@ -20,9 +20,9 @@ class ADMLink(IRepository[Link]):
         CREATE TABLE IF NOT EXISTS link (
         id VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
         text_id INTEGER,
-        note_id json INTEGER,
+        note_ids json INTEGER,
         FOREIGN KEY(text_id) REFERENCES text(id),
-        FOREIGN KEY(note_id) REFERENCES note(id)
+        FOREIGN KEY(note_ids) REFERENCES note(id)
         );"""
         create_table = self.cursor.execute(create_table_query)
         if create_table is not None:

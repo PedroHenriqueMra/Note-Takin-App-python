@@ -54,7 +54,7 @@ class ConfigDB:
         return {**settings.get_dict_structure(), "_id":id}
 
     def edit_settings(self, settings_id:Union[str, ObjectId], new_settings:Dict[str, Any]) -> Settings:
-        settings_id = ObjectId(settings_id) if type(settings_id) != ObjectId else settings_id
+        settings_id = ObjectId(settings_id) if type(settings_id) != type(ObjectId) else settings_id
         collection = self.collection
         
         # Get user data in db
