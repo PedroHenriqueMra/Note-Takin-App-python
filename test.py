@@ -22,7 +22,7 @@ def suite():
     # suite.addTest(TestUtils("test_get_path_of_a_key"))
 
     # sql test functions
-    # suite.addTest(TestTextTable("create_register"))
+    suite.addTest(TestTextTable("create_register"))
     # suite.addTest(TestNoteTable("create_register"))
     # suite.addTest(TestLinkTable("create_register"))
 
@@ -32,15 +32,13 @@ def suite():
     # suite.addTest(TestSettingsDB("to_list"))
     # suite.addTest(TestSettingsDB("test_edit_settings_data_in_db"))
     ## table_handler_db:
-
-    # services:
-    # suite.addTest(TestGetterSqlData("test_get_link_data"))
-    # suite.addTest(TestGetterSqlData("test_get_text_data"))
-    # suite.addTest(TestGetterSqlData("test_get_note_data"))
-    # suite.addTest(TestGetterSqlData("test_get_allnotes_data"))
     
 
-    suite.addTest(TestSettingsDB("test_get_link_data"))
+    # services:
+    # suite.addTest(TestGetterSqlData("test_getter_get_link_data"))
+    # suite.addTest(TestGetterSqlData("test_getter_get_text_data"))
+    # suite.addTest(TestGetterSqlData("test_getter_get_notes_data"))
+    
 
     return suite
 

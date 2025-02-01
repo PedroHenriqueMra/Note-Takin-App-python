@@ -7,6 +7,3 @@ class IGetterService:
     
     def get_notes_data(self, note_ids:list) -> list:
         raise NotImplementedError()
-    
-    def get_all_notes(self, note_ids:list) -> dict:
-        raise NotImplementedError()

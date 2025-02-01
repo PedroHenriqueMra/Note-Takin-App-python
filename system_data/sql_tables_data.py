@@ -22,6 +22,6 @@ class Note:
 class Link:
     # foreign key
     text_id:int
-    note_id:int
+    note_ids:list
     # UUID
     id:UUID = uuid4()

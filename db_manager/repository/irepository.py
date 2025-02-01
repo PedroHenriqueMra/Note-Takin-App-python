@@ -7,7 +7,7 @@ class IRepository[T](ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def get(self, id:int|str) -> Optional[T]:
+    def get_row(self, id:int|str) -> Optional[T]:
         raise NotImplemented()
     
     @abstractmethod

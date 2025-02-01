@@ -13,7 +13,7 @@ class DataGetter(IGetterService):
             
             note_ids = ast.literal_eval(data["note_ids"])
             return {
-                "id":data["id"],
+                "link_id":data["id"],
                 "text_id":data["text_id"],
                 "note_ids": note_ids
             }
@@ -57,23 +57,3 @@ class DataGetter(IGetterService):
                 res.append(dict_note)
             
             return res
-        
-
-    def get_all_notes(self, note_ids:list) -> dict:
-        with sqlite.db_connection(change=False) as cur:
-            query = "SELECT * FROM note WHERE id=?"
-            notes = [cur.execute(query, str(n)).fetchone() for n in note_ids]
-            if notes == None:
-                return None
-            
-            result = dict()
-            for note in range(0, len(notes)):
-                result[notes[note]["id"]] = {
-                    "type": notes[note]["type"],
-                    "reference": notes[note]["reference"],
-                    "content": notes[note]["content"],
-                    "create_date": notes[note]["create_date"],
-                    "edit_date": notes[note]["edit_date"]
-                }
-
-            return result

@@ -56,12 +56,3 @@ class TestSettingsDB(unittest.TestCase):
         
         print("---- new data: ----")
         print(self.config.find_settings(id).get_dict_structure())
-
-
-    def test_get_link_data(self):
-        service = DataGetter()
-        repository = TableHandlerDB(service)
-
-        data = repository.get_link_data("f504a5cd-2fd7-46f1-91ac-dc5c4dbb81df")
-        
-        print(data)

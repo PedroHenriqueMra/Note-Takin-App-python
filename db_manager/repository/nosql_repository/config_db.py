@@ -76,7 +76,7 @@ class ConfigDB:
                         parsed_settings.get_dict_structure(),
                         key_sett)
                     filter = {"_id":settings_id}
-                    new_value = {"$set": {str(key_path):val_sett}}
+                    new_value = {str(key_path):val_sett}
 
                     change = collection.update_one(filter, new_value, upsert=False)
                     if change != None:

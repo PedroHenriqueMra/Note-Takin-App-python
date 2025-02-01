@@ -5,6 +5,7 @@ from pymongo.collection import Collection
 from bson.objectid import ObjectId
 
 from db_manager.repository.db_services.IGetterService import IGetterService
+from utils.date_now import date_now
 
 
 class TableHandlerDB:
@@ -19,51 +20,66 @@ class TableHandlerDB:
     def create_data(self, link_id:Union[ObjectId, str]) -> dict | None:
         link_id = ObjectId(link_id) if type(link_id) != type(ObjectId) else link_id
 
-        get_text_id = self.__get_link_data(link_id)["text_id"]
-        get_note_ids = self.__get_link_data(link_id)["note_ids"]
+        get_text = self.__get_link_data(link_id)["text"]
+        get_notes = self.__get_link_data(link_id)["notes"]
+        note_ids = []
+        for id in get_notes:
+            note_ids.append(id)
 
-        if len(get_text_id) or len(get_note_ids) == 0:
-            return
+        if len(get_text) or len(get_notes) == 0:
+            return None
 
         data = {
-            "open":True,
-            "changed":False,
-            "text_id":get_text_id,
-            "note_ids": [n for n in get_note_ids]
+            "open": True,
+            "content": {
+                "text": get_text,
+                "notes": get_notes
+            },
+            "changes": {
+                "changed": False,
+                "text":{
+                    "changed":False,
+                    "change_scripts": []
+                    },
+                "notes":{
+                    "changed":False,
+                    "change_scripts": []
+                    }
+            },
+            "last_view": date_now()
         }
-        data_id = self.collection.insert_one(data)
+
+        data_id = self.collection.insert_one(data).inserted_id
         if data_id is None:
             return
         
         return {**data, "_id":data_id}
         
 
-    def close(self, link_tab:ObjectId) -> None:
-        update = str({"open":False})
-        self.collection.update_one({"_id":link_tab}, {"$set": update})
+    def delete_tab(self, link_tab:ObjectId, with_changes:bool=False) -> dict|None:
+        filter = str({"_id":link_tab})
+        query_tab = self.collection.find_one(filter)
+        if query_tab == None:
+            return
+        
+        if query_tab["changes"]["changed"]:
+            if with_changes:
+                self.collection.delete_one(filter, comment="tab register deleted")
 
-    def __delete_tab(self):
+        return query_tab
+
+    def save_text_changes(self, tab_id:ObjectId):
+        if self.__text_was_changed(tab_id):
+            # save logic
+            pass
+
+    def save_note_changes(self, tab_id:ObjectId):
+        if self.__note_was_changed(tab_id):
+            # save logic
+            pass
+
+    def save_all(self, tab_id:ObjectId) -> None:
         pass
-
-    def save_text_changes(self, text_id:int):
-        if self.__text_was_changed(text_id):
-            # save logic
-            pass
-
-
-    def save_note_changes(self, note_id:int):
-        if self.__note_was_changed(note_id):
-            # save logic
-            pass
-
-    def save_all(self, link_id:ObjectId) -> None:
-        text_id = self.__get_link_data(link_id)["text"]["id"]
-        self.save_text_changes(text_id)
-
-        note_ids = self.__get_link_data(link_id)["notes"]["id"]
-        for id in note_ids:
-            self.save_note_changes(id)
-
 
 
     def __get_link_data(self, link_id:str) -> dict:
@@ -73,7 +89,7 @@ class TableHandlerDB:
 
         text_data = self.getter_service.get_text_data(link_data["text_id"])
         notes_data = self.getter_service.get_notes_data(link_data["note_ids"])
-        if text_data == None or notes_data == None:
+        if text_data == None or len(notes_data) == 0:
             return None
  
         res = dict()
@@ -84,8 +100,8 @@ class TableHandlerDB:
         
 
 
-    def __text_was_changed(self, text_id:int) -> bool:
+    def __text_was_changed(self, tab_id:ObjectId) -> bool:
         pass
 
-    def __note_was_changed(self, note_id:int) -> bool:
+    def __note_was_changed(self, tab_id:ObjectId) -> bool:
         pass

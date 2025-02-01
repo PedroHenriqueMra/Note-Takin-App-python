@@ -20,40 +20,42 @@ class ADMText(IRepository[Text]):
         type VARCHAR(5) NOT NULL,
         title VARCHAR(500) NOT NULL,
         content MEDIUMTEXT,
-        create_date DATETIME NOT NULL,
-        edit_date DATETIME NOT NULL
+        create_date DATETIME NOT NULL DEFAULT current_timestamp,
+        edit_date DATETIME NOT NULL DEFAULT current_timestamp
         );"""
         create_table = self.cursor.execute(table)
         if create_table is not None:
             sqlite_conn.commit()
 
+
     def add_row(self, values:Text) -> Text:
-        get_date_now = date_now()
-        data = (values.title, values.content, get_date_now, get_date_now)
-        insert = """INSERT INTO text(type, title, content, create_date, edit_date) VALUES('txt', ?, ?, ?, ?)"""
-        self.cursor.execute(insert, data)
+
+
+        data = (values.title, values.content)
+        insert_query = "INSERT INTO text(type, title, content, create_date, edit_date) VALUES('txt', ?, ?)"
+        inserted = self.cursor.execute(insert_query, data).fetchone()
         logging.info(f"Item added: Title: {values.title} Content: {values.content}")
 
         sqlite_conn.commit()
-        return Text (title=values.title,content=values.content,create_date=get_date_now,edit_date=get_date_now)
+        return Text (title=inserted["title"],content=inserted["content"], create_date=inserted["create_date"], edit_date=inserted["edit_date"])
 
-    def get(self, id:int) -> Optional[Text]:
-        # 0:id, 1:type, 2:title, 3:content, 4:create_date, 5:edit_date
+
+    def get_row(self, id:int) -> Optional[Text]:
         query = self.cursor.execute("SELECT * FROM text WHERE id=?", (id,)).fetchone()
         if query != None:
-            return Text(title=query[2], content=query[3], create_date=query[4], edit_date=query[5])
+            return Text(title=query["title"], content=query["content"], create_date=query["create_date"], edit_date=query["edit_date"])
 
         return None
 
+
     def delete(self, id:int) -> bool:
         count_table_query = "SELECT COUNT(*) FROM text"
-        count_before = self.cursor.execute(count_table_query).fetchone()[0]
+        count_before = self.cursor.execute(count_table_query).fetchone()
 
-        delete_query = f"DELETE FROM text WHERE id={id}"
-        self.cursor.execute(delete_query)
+        delete_query = f"DELETE FROM text WHERE id=?"
+        self.cursor.execute(delete_query, (id,))
 
         count_after = self.cursor.execute(count_table_query).fetchone()
-        [0]
 
         if count_before != count_after:
             ADMLink.delete_associations(id)
@@ -62,6 +64,7 @@ class ADMText(IRepository[Text]):
         
         logging.info(f"Text {id} not found")
         return False
+        
         
     def update(self, id:int|str, field:str, value:Any) -> Optional[Text]:
         pass
