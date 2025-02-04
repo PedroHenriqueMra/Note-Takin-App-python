@@ -20,8 +20,6 @@ class Note:
 
 @dataclass
 class Link:
-    # foreign key
     text_id:int
     note_ids:list
-    # UUID
     id:UUID = uuid4()

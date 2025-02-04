@@ -5,7 +5,7 @@ from pymongo.collection import Collection
 from bson.objectid import ObjectId
 
 from db_manager.repository.db_services.IGetterService import IGetterService
-from utils.date_now import date_now
+from utils.date_now import current_date
 
 
 class TableHandlerDB:
@@ -46,7 +46,7 @@ class TableHandlerDB:
                     "change_scripts": []
                     }
             },
-            "last_view": date_now()
+            "last_view": current_date()
         }
 
         data_id = self.collection.insert_one(data).inserted_id

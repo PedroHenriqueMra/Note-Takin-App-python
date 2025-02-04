@@ -1,9 +1,11 @@
 from typing import Any, Optional
 from db_manager.repository.irepository import IRepository
-from utils.date_now import date_now
+from utils.date_now import current_date
+from utils.row_exists import row_exists
 from ...connections.sqlite_connection import sqlite_conn
 from system_data.sql_tables_data import Note
 from db_manager.repository.sql_repository.link_handler import ADMLink
+from system_data.sql_tables_data import Link
 
 # show info
 import logging
@@ -20,47 +22,44 @@ class ADMNote(IRepository[Note]):
         type VARCHAR(5) NOT NULL,
         reference VARCHAR(50) NOT NULL,
         content TEXT,
-        create_date DATETIME NOT NULL DEFAULT current_timestamp,
-        edit_date DATETIME NOT NULL DEFAULT current_timestamp
+        create_date DATETIME NOT NULL,
+        edit_date DATETIME NOT NULL
         );"""
-        create_table = self.cursor.execute(create_table_query)
-        if create_table is not None:
-            sqlite_conn.commit()
+        self.cursor.execute(create_table_query)
 
-    def add_row(self, linked_text_:int, values:Note) -> Note:
+    def add_row(self, linked_text:int, note_values:Note) -> Note|None:
+        if not row_exists("text", linked_text):
+            return
         
+        insert_query = "INSERT INTO note(type, reference, content, create_date, edit_date) VALUES('note', ?, ?, ?, ?)"
+        data_query = (note_values.reference, note_values.content, current_date(), current_date())
+        self.cursor.execute(insert_query, data_query)
+        row_id = self.cursor.lastrowid
 
-        data = (values.reference, values.content)
-        insert_query = "INSERT INTO note(type, reference, content, create_date, edit_date) VALUES('note', ?, ?)"
-        inserted = self.cursor.execute(insert_query, data).fetchone()
-        logging.info(f"Item added: reference: {values.reference} Content: {values.content}")
+        logging.info(f"Note added: reference: {note_values.reference} Content: {note_values.content}")
+        ADMLink.append_note(linked_text, row_id)
 
-        sqlite_conn.commit()
-        return Note (reference=inserted["reference"],content=inserted["content"],create_date=inserted["create_date"],edit_date=inserted["edit_date"])
+        return Note (reference=note_values.reference,content=note_values.content,create_date=current_date(),edit_date=current_date())
 
     def get_row(self, id:int) -> Optional[Note]:
         query = "SELECT * FROM note WHERE id=?"
         data = self.cursor.execute(query, (id,)).fetchone()
-        if query != None:
-            return Note(reference=data["reference"], content=data["content"], create_date=data["create_date"], edit_date=data["edit_date"])
+        if query == None:
+            return None
 
-        return None
+        return Note(reference=data["reference"], content=data["content"], create_date=data["create_date"], edit_date=data["edit_date"])
 
-    def delete(self, id:int) -> bool:
-        count_table_query = "SELECT COUNT(*) FROM note"
-        count_before = self.cursor.execute(count_table_query).fetchone()
+    def delete(self, id:int) -> None:
+        count_before = self.cursor.execute("SELECT COUNT(*) FROM note").fetchone()
+        delete_query = "DELETE FROM note WHERE id=?"
+        self.cursor.execute(delete_query, (id,))
+        count_after = self.cursor.execute("SELECT COUNT(*) FROM note").fetchone()
 
-        delete_query = f"DELETE FROM note WHERE id=?"
-        self.cursor.execute(delete_query, (id))
-
-        count_after = self.cursor.execute(count_table_query).fetchone()
-        if count_before != count_after:
-            ADMLink.delete_note_association(id)
-            logging.info(f"Note {id} deleted")
-            return True
+        if count_before == count_after:
+            return
         
-        logging.info(f"Note {id} not found")
-        return False
+        logging.log(f"Note {id} deleted!")
+        ADMLink.remove_note(id)
 
     def update(self, id:int|str, field:str, value:Any) -> Optional[Note]:
         pass

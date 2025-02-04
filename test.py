@@ -22,8 +22,9 @@ def suite():
     # suite.addTest(TestUtils("test_get_path_of_a_key"))
 
     # sql test functions
-    suite.addTest(TestTextTable("create_register"))
-    # suite.addTest(TestNoteTable("create_register"))
+    # suite.addTest(TestTextTable("test_add_row"))
+    suite.addTest(TestTextTable("test_delete"))
+    # suite.addTest(TestNoteTable("test_add_row"))
     # suite.addTest(TestLinkTable("create_register"))
 
     # no-sql test functions

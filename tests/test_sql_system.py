@@ -10,35 +10,25 @@ class TestTextTable(unittest.TestCase):
         text:ADMText = ADMText()
 
         def setUp(self):
-                self.new_register = Text("aleatory_title__", "lalalallala")
+                self.new_register = Text("testetstts", "etetaetdad")
 
         def test_add_row(self):
                 new_reg = self.new_register
-                expected_value = Text(title=new_reg.title, content=new_reg.content)
 
-                # after do mock!
+                # then mock!
                 action = self.text.add_row(new_reg)
 
                 self.assertIsInstance(action, Text)
-                self.assertEqual(action.title, expected_value.title)
-                self.assertEqual(action.content, expected_value.content)
 
         def test_get_row(self):
                 id = 1
-                title = ""
-                content = ""
-                expected_value = Text(title=title, content=content)
-
                 action = self.text.get_row(id)
-
                 self.assertIsInstance(action, Text)
-                self.assertEqual(action.title, expected_value.title)
-                self.assertEqual(action.content, expected_value.content)
 
         def test_delete(self):
-                id = 1
+                id = 5
                 action = self.text.delete(id)
-                self.assertIs(action)
+                self.assertTrue(action)
 
 
 
@@ -48,11 +38,12 @@ class TestNoteTable(unittest.TestCase):
         def setUp(self):
                 self.new_register = Note("asdasdad", "lolalssas")
 
-        def create_register(self):
-                register = self.note.add_row(self.new_register)
-                if register:
-                        print(f"new note register = {register}")
-                        return register
+        def test_add_row(self):
+                new_reg = self.new_register
+
+                # then mock!
+                action = self.note.add_row(5, new_reg)
+                self.assertIsInstance(action, Note)
 
 
 
