@@ -25,7 +25,7 @@ class TestTextTable(unittest.TestCase):
                 action = self.text.get_row(id)
                 self.assertIsInstance(action, Text)
 
-        def test_delete(self):
+        def test_delete_text(self):
                 id = 5
                 action = self.text.delete(id)
                 self.assertTrue(action)
@@ -36,14 +36,18 @@ class TestNoteTable(unittest.TestCase):
         note = ADMNote()
 
         def setUp(self):
-                self.new_register = Note("asdasdad", "lolalssas")
+                self.new_register = Note("note_0303030", "lolalssas")
 
         def test_add_row(self):
                 new_reg = self.new_register
 
                 # then mock!
-                action = self.note.add_row(5, new_reg)
+                action = self.note.add_row(1, new_reg)
                 self.assertIsInstance(action, Note)
+
+        def test_delete_note(self):
+                id = 3
+                action = self.note.delete(id)
 
 
 

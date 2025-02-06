@@ -1,11 +1,11 @@
 import unittest
 
-from tests.test_nosql_system import TestSettingsDB
+from tests.test_nosql_handlers import TestSettingsDB
 from tests.test_services import TestGetterSqlData
 from tests.test_utils import TestUtils
-from tests.test_sql_system import TestTextTable
-from tests.test_sql_system import TestNoteTable
-from tests.test_sql_system import TestLinkTable
+from tests.test_sql_handlers import TestTextTable
+from tests.test_sql_handlers import TestNoteTable
+from tests.test_sql_handlers import TestLinkTable
 from tests.test_contracts import TestDataClasses
 
 
@@ -22,9 +22,10 @@ def suite():
     # suite.addTest(TestUtils("test_get_path_of_a_key"))
 
     # sql test functions
+    # suite.addTest(TestTextTable("test_delete_text"))
     # suite.addTest(TestTextTable("test_add_row"))
-    suite.addTest(TestTextTable("test_delete"))
     # suite.addTest(TestNoteTable("test_add_row"))
+    # suite.addTest(TestNoteTable("test_delete_note"))
     # suite.addTest(TestLinkTable("create_register"))
 
     # no-sql test functions

@@ -1,23 +1,24 @@
 import json
 import ast
-from typing import Any, Optional
+from utils.row_exists import row_exists
+
 from db_manager.repository.irepository import IRepository
+from ...connections.sqlite_connection import sqlite_conn
+
 from system_data.sql_tables_data import Link
 from system_data.sql_tables_data import Note
-from utils.row_exists import row_exists
-from sqlite3 import OperationalError
-from ...connections.sqlite_connection import sqlite_conn
+from typing import Any, Optional
 
 # show info
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.addLevelName("Link_Handler")
+logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
 class ADMLink(IRepository[Link]):
     cursor = sqlite_conn.cursor()
 
     def __init__(self):
-
         create_table_query = """
         CREATE TABLE IF NOT EXISTS link (
         id VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
@@ -42,7 +43,7 @@ class ADMLink(IRepository[Link]):
         insert = "INSERT INTO link VALUES(?, ?, ?)"
         cls.cursor.execute(insert, inject_data)
 
-        logging.info(f"A new row created.\nLink id: {values.id}\nText id {values.text_id}\nNote id: {values.note_ids}")
+        logging.info(f"New link row created:\nLink id: {values.id}\nText id {values.text_id}\nNote ids: {values.note_ids}")
 
         return values
     
@@ -91,6 +92,7 @@ class ADMLink(IRepository[Link]):
         select_query = "SELECT * FROM link WHERE text_id=? LIMIT 1"
         cls.cursor.execute(select_query, (text_id,))
         if cls.cursor.fetchone() is None:
+            logging.warning(f"The text ({text_id}) doesn't exist")
             cls.add_row(Link(text_id, [note_id]))
 
         link_row = cls.cursor.execute(select_query, (text_id,)).fetchone()
@@ -98,39 +100,42 @@ class ADMLink(IRepository[Link]):
         if note_id not in note_ids:
             note_ids.append(note_id)
 
-        note_inserted = cls.cursor.execute(
-        "UPDATE link SET note_ids=? WHERE id=?",
-        (json.dumps(note_ids), link_row["id"])).fetchone()
+        update_query = "UPDATE link SET note_ids=? WHERE id=?"
+        cls.cursor.execute(update_query, (json.dumps(note_ids), link_row["id"])).fetchone()
+        logging.info(f"Note ({note_id}) was linked with text ({text_id}) successfuly.")
         
-        return Note(reference=note_inserted["reference"],
-        content=note_inserted["content"],
-        create_date=note_inserted["create_date"],
-        edit_date=note_inserted["edit_date"])
+        # get note data
+        get_note_query = "SELECT * FROM note WHERE id=? LIMIT 1"
+        note = cls.cursor.execute(get_note_query, (note_id,)).fetchone()
+
+        return Note(reference=note["reference"],
+        content=note["content"],
+        create_date=note["create_date"],
+        edit_date=note["edit_date"])
 
 
     @classmethod
     def remove_note(cls, note_id:int) -> None:
-        query_select = "SELECT * FROM link WHERE note_ids IN ?"
-        link_row = cls.cursor.execute(query_select, (f"{note_id}",)).fetchmany()
-        if link_row is None:
+        query_select = "SELECT * FROM link, json_each(note_ids) WHERE json_each.value LIKE (?)"
+        link_row = cls.cursor.execute(query_select, (str(note_id))).fetchmany()
+        if len(link_row) is 0:
+            logging.warning(f"The note ({note_id}) isn't linked to any text")
             return
         
         # check others possible results found
-        note_ids = None
         for row in link_row:
             id_list = ast.literal_eval(row["note_ids"])
-            if id_list in note_ids:
-                note_ids = id_list
+            if note_id in id_list:
+                link_row = row
                 break
-                
-        if note_ids is None:
-            return
         
         table_id = link_row["id"]
-        new_note_ids = [n for n in note_ids if n != note_id]
+        old_note_ids = ast.literal_eval(link_row["note_ids"])
+        new_note_ids = json.dumps([n for n in old_note_ids if n != note_id])
 
-        query_replace = "UPDATE link SET note_ids={} WHERE id={}".format(new_note_ids, table_id)
-        cls.cursor.execute(query_replace)
+        query_replace = "UPDATE link SET note_ids=? WHERE id=?"
+        cls.cursor.execute(query_replace, (new_note_ids, table_id))
+        logging.info(f"Note ({note_id}) was deleted from linked text ({link_row["text_id"]})")
 
 
     def update(self, id:int|str, field:str, value:Any) -> Optional[Link]:

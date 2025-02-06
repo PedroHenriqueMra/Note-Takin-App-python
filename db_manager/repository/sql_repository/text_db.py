@@ -1,14 +1,15 @@
-from db_manager.repository.irepository import IRepository
 from typing import Any, Optional
-from db_manager.repository.sql_repository.link_handler import ADMLink
 from utils.date_now import current_date
+
+from db_manager.repository.irepository import IRepository
 from ...connections.sqlite_connection import sqlite_conn
+from db_manager.repository.sql_repository.link_handler import ADMLink
 from system_data.sql_tables_data import Text
-from system_data.sql_tables_data import Link
 
 # show info
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.addLevelName("Text_Handler")
+logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
 class ADMText(IRepository[Text]):
@@ -32,7 +33,7 @@ class ADMText(IRepository[Text]):
         data_query = (text_values.title, text_values.content, current_date(), current_date())
         self.cursor.execute(insert_query, data_query)
         
-        logging.info(f"Text added: Title: {text_values.title} Content: {text_values.content}")
+        logging.info(f"New text row created:\nTitle: {text_values.title}\nContent: {text_values.content}")
         return Text (title=text_values.title,content=text_values.content, create_date=current_date(), edit_date=current_date())
 
 
@@ -52,10 +53,10 @@ class ADMText(IRepository[Text]):
 
         if count_before != count_after:
             ADMLink.delete(text_id)
-            logging.info(f"Text {text_id} deleted")
+            logging.info(f"Text ({text_id}) deleted")
             return True
         
-        logging.info(f"Text {text_id} not found")
+        logging.info(f"Text ({text_id}) not found")
         return False
         
         
