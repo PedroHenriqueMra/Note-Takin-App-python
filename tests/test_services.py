@@ -1,5 +1,5 @@
 import unittest
-from db_manager.repository.db_services.sql_getter import DataGetter
+from db_manager.repository.db_services.sql_getter_service import DataGetter
 
 class TestGetterSqlData(unittest.TestCase):
     service = DataGetter()

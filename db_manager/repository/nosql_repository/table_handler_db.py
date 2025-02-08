@@ -4,7 +4,7 @@ from db_manager.connections.mgdb_connection import mongo_conn
 from pymongo.collection import Collection
 from bson.objectid import ObjectId
 
-from db_manager.repository.db_services.IGetterService import IGetterService
+from db_manager.repository.db_services.getter.IGetterService import IGetterService
 from utils.date_now import current_date
 
 

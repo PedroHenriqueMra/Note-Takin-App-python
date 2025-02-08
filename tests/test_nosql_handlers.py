@@ -5,14 +5,16 @@ from db_manager.repository.nosql_repository.config_db import ConfigDB
 
 from bson.objectid import ObjectId
 
-from db_manager.repository.db_services.sql_getter import DataGetter
+from db_manager.repository.db_services.sql_getter_service import DataGetter
 from db_manager.repository.nosql_repository.table_handler_db import TableHandlerDB
 
 class TestSettingsDB(unittest.TestCase):
-    config = ConfigDB()
+    def setUp(self):
+        self.config:ConfigDB = ConfigDB()
+        self.id:str = '678e9030155b4d08703a5a82'
 
     def to_list(self):
-        id = '678e9030155b4d08703a5a82'
+        id = self.id
         # id = None
 
         if id != None:
@@ -30,7 +32,7 @@ class TestSettingsDB(unittest.TestCase):
     
     def test_edit_settings_data_in_db(self):
         # Get id
-        id = '678e9030155b4d08703a5a82'
+        id = self.id
         print()
         print(f"Id = {id}")
 

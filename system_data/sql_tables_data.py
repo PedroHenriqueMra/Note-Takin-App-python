@@ -12,6 +12,7 @@ class Text:
 
 @dataclass
 class Note:
+    linked_text_id:int
     reference:str
     content:str | None
     create_date:str = None

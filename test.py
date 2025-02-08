@@ -24,9 +24,11 @@ def suite():
     # sql test functions
     # suite.addTest(TestTextTable("test_delete_text"))
     # suite.addTest(TestTextTable("test_add_row"))
+    
     # suite.addTest(TestNoteTable("test_add_row"))
     # suite.addTest(TestNoteTable("test_delete_note"))
-    # suite.addTest(TestLinkTable("create_register"))
+
+    # suite.addTest(TestLinkTable("test_create_register"))
 
     # no-sql test functions
     ## config_db:
