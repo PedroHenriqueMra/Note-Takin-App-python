@@ -1,10 +1,12 @@
 import unittest
+from unittest.mock import Mock 
 
 from system_data.sql_tables_data import *
 
 from db_manager.repository.sql_repository.note_db import ADMNote
 from db_manager.repository.sql_repository.text_db import ADMText
 from db_manager.repository.sql_repository.link_handler import ADMLink
+
 
 class TestTextTable(unittest.TestCase):
         def setUp(self):
@@ -14,7 +16,6 @@ class TestTextTable(unittest.TestCase):
         def test_add_row(self):
                 new_reg = self.new_register
 
-                # then mock!
                 action = self.text.add_row(new_reg)
 
                 self.assertIsInstance(action, Text)
@@ -39,7 +40,6 @@ class TestNoteTable(unittest.TestCase):
         def test_add_row(self):
                 new_reg = self.new_register
 
-                # then mock!
                 action = self.note.add_row(1, new_reg)
                 self.assertIsInstance(action, Note)
 
@@ -63,7 +63,6 @@ class TestLinkTable(unittest.TestCase):
         def create_register(self):
                 new_reg = self.new_register
 
-                # then mock!
                 action = self.link.add_row(1, new_reg)
                 self.assertIsInstance(action, Link)
 

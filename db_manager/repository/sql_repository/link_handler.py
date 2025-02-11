@@ -2,7 +2,7 @@ import json
 import ast
 from utils.row_exists import row_exists
 
-from db_manager.repository.irepository import IRepository
+from db_manager.repository.sql_repository.irepository import IRepository
 from ...connections.sqlite_connection import sqlite_conn
 
 from system_data.sql_tables_data import Link

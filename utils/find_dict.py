@@ -31,7 +31,7 @@ def get_dict_path(base_dict:dict, find_key:str, cur_path:list=[]) -> Optional[li
 
         cur_path.pop()
 
-# Parse a list to a nested dict as string format
+# Parse a list of dict keys to a nested dict
 def generate_nested_dict(path:list) -> Optional[dict|str]:
     if path == None:
         return None
@@ -50,5 +50,4 @@ def generate_nested_dict(path:list) -> Optional[dict|str]:
     for _ in range(1, len(path)):
         dict_string += "}"
 
-    parsed_path = ast.literal_eval(dict_string)
-    return parsed_path
+    return ast.literal_eval(dict_string)

@@ -12,8 +12,8 @@ sqlite = SqliteDB()
 
 def row_exists(table_name:str, primary_key:Any) -> bool:
     with sqlite.db_connection() as cur:
-        query = "SELECT * FROM {} WHERE id={}".format(table_name, primary_key)
-        exist = cur.execute(query).fetchone()
+        query = "SELECT * FROM {} WHERE id = ?".format(table_name)
+        exist = cur.execute(query, (primary_key,)).fetchone()
         if exist == None:
             return False
         

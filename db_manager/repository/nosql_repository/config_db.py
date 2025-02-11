@@ -1,15 +1,17 @@
-from db_manager.connections.mgdb_connection import mongo_conn
-from system_data.settings_data import Settings
 from typing import Any, Dict, Optional, Union
 from utils.find_dict import find_keypath
+from system_data.settings_data import Settings
+
+from db_manager.connections.mgdb_connection import mongo_conn
+
 # Get 'Database' type
 from pymongo.database import Database
 from pymongo.collection import Collection
-
 from bson.objectid import ObjectId
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.addLevelName("Config_db")
+logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 class ConfigDB:
 
@@ -19,7 +21,7 @@ class ConfigDB:
 
         collection = self.collection
         if collection.find_one() == None:
-            # Create initial settings
+            # Create settings if no setting exists yet
             self.create_default_settings()
         
 
@@ -45,7 +47,7 @@ class ConfigDB:
         find = Settings.parse(find)
         return find
         
-    # Create a default settings
+    # Create default settings
     def create_default_settings(self) -> dict:
         collection = self.collection
 
