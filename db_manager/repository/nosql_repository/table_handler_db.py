@@ -5,7 +5,6 @@ from pymongo.collection import Collection
 from bson.objectid import ObjectId
 
 from db_manager.db_services.getter_service.IGetterService import IGetterService
-from db_manager.db_services.change_service.change_service import ChangeService
 from utils.date_now import current_date
 
 import logging
@@ -14,15 +13,14 @@ logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 class TableHandlerDB():
 
-    def __init__(self, getter_service:IGetterService,change_service:ChangeService):
+    def __init__(self, getter_service:IGetterService):
         self.getter_service:IGetterService = getter_service
-        # self.change_service:ChangeService = change_service
         
         self.collection_name:str = "table_handler_test"
         self.collection:Collection = mongo_conn[self.collection_name]
 
 
-    def create_data(self, link_id:Union[ObjectId, str]) -> dict | None:
+    def create_tab(self, link_id:Union[ObjectId, str]) -> dict | None:
         link_id = ObjectId(link_id) if type(link_id) != type(ObjectId) else link_id
 
         get_text = self.__get_link_data(link_id)["text"]
@@ -58,16 +56,7 @@ class TableHandlerDB():
             return
         
         return {**data, "_id":data_id}
-
-
-    # def init_change_handler(self, table_id:Union[ObjectId, str]) -> None:
-    #     table_id = ObjectId(table_id) if type(table_id) != type(ObjectId) else table_id
-    #     table = self.collection.find_one({"_id":table_id})
-    #     if table is None:
-    #         return
-        
-
-
+    
 
     def delete_tab(self, link_tab:ObjectId, with_changes:bool=False) -> dict|None:
         filter = str({"_id":link_tab})
@@ -97,4 +86,3 @@ class TableHandlerDB():
         res["text"] = text_data
         res["notes"] = notes_data
         return res
-        

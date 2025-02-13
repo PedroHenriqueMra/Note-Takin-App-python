@@ -10,6 +10,8 @@ def find_keypath(obj:dict, key:str) -> Optional[dict|str]:
         Args:
             obj (dict): The dictionary
             key (str): The name of the key you want to get path
+
+        !The key arg is aways a string!
         """
     
     res = get_dict_path(base_dict=obj, find_key=key, cur_path=[])
@@ -19,6 +21,9 @@ def find_keypath(obj:dict, key:str) -> Optional[dict|str]:
 
 def get_dict_path(base_dict:dict, find_key:str, cur_path:list=[]) -> Optional[list]:
     for k, v in base_dict.items():
+        if isinstance(k, int):
+            k = int(k)
+
         cur_path.append(k)
 
         if k is find_key:
