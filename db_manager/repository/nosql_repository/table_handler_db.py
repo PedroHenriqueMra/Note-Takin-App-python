@@ -35,7 +35,7 @@ class TableHandlerDB():
         data = {
             "content": {
                 "text": get_text,
-                "notes": get_notes
+                "notes": get_notes # A list of notes
             },
             "changes": {
                 "changed": False,

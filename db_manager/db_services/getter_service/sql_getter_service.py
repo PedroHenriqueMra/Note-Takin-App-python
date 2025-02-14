@@ -1,5 +1,5 @@
 from typing import Union
-from db_manager.repository.db_services.IGetterService import IGetterService
+from db_manager.db_services.getter_service.IGetterService import IGetterService
 from db_manager.connections.sqlite_connection import sqlite
 import ast
 
@@ -34,7 +34,7 @@ class DataGetter(IGetterService):
                 "edit_date": data["edit_date"]
             }
     
-    def get_notes_data(self, note_ids:list) -> dict:
+    def get_notes_data(self, note_ids:list) -> list:
         with sqlite.db_connection(change=False) as cur:
             query = "SELECT * FROM note WHERE id=?"
             for id in note_ids:

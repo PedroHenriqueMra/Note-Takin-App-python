@@ -1,7 +1,7 @@
 import unittest
 
 from tests.test_nosql_handlers import TestSettingsDB
-from tests.test_services import TestGetterSqlData
+from tests.db_services_tests.test_getter_service import TestGetterSqlData
 from tests.test_utils import TestUtils
 from tests.test_sql_handlers import TestTextTable
 from tests.test_sql_handlers import TestNoteTable

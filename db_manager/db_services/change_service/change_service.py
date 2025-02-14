@@ -8,6 +8,7 @@ from exceptions.tab_not_exists import TableNotExistsException
 import logging
 
 from system_data.change_data import Change
+from utils.row_exists import row_exists
 logging.addLevelName("change_service")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
@@ -22,7 +23,6 @@ class ChangeService():
         except TableNotExistsException as err:
             logging.error(f"Error in constructor. Message: {err}")
 
-
     def __get_table_data(self, table_id:ObjectId) -> None:
         with mongodb.context_database() as db:
             connection_string = "table_handler_test"
@@ -33,14 +33,19 @@ class ChangeService():
             
             self.table_data = ast.literal_eval(table)
     
-    def insert_query(self, change:Change, note_id:int=None) -> list | None:
-        pass
 
-    def update_query(self, change:Change, note_id:int=None) -> list | None:
-        pass
+    def insert_query(self, change:Change) -> list | None:
+        self.table_data["changes"]["changed"] = True
+        
 
-    def delete_query(self, change:Change, note_id:int=None) -> list | None:
-        pass
+
+
+
+    def update_query(self, change:Change) -> list | None:
+        self.table_data["changes"]["changed"] = True
+        
+    def delete_query(self, change:Change) -> list | None:
+        self.table_data["changes"]["changed"] = True
 
     def save(self) -> None:
         pass
