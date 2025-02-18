@@ -8,7 +8,7 @@ from db_manager.db_services.getter_service.IGetterService import IGetterService
 from utils.date_now import current_date
 
 import logging
-logging.addLevelName("Table_Handler_db")
+logging.addLevelName(level=1,levelName="Table_Handler_db")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 class TableHandlerDB():

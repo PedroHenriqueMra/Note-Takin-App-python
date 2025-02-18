@@ -3,7 +3,7 @@ import ast
 from utils.row_exists import row_exists
 
 from db_manager.repository.sql_repository.irepository import IRepository
-from ...connections.sqlite_connection import sqlite_conn
+from db_manager.connections.sqlite_connection import sqlite_conn
 
 from system_data.sql_tables_data import Link
 from system_data.sql_tables_data import Note
@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 # show info
 import logging
-logging.addLevelName("Link_Handler")
+logging.addLevelName(level=1,levelName="Link_Handler")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
@@ -120,7 +120,7 @@ class ADMLink(IRepository[Link]):
     def remove_note(cls, note_id:int) -> None:
         query_select = "SELECT * FROM link, json_each(note_ids) WHERE json_each.value LIKE (?)"
         link_row = cls.cursor.execute(query_select, (str(note_id))).fetchmany()
-        if len(link_row) is 0:
+        if len(link_row) == 0:
             logging.warning(f"The note ({note_id}) isn't linked to any text")
             return
         

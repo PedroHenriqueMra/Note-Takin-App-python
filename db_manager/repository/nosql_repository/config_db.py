@@ -10,7 +10,7 @@ from pymongo.collection import Collection
 from bson.objectid import ObjectId
 
 import logging
-logging.addLevelName("Config_db")
+logging.addLevelName(level=1, levelName="Config_db")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 class ConfigDB:

@@ -10,7 +10,7 @@ from db_manager.repository.sql_repository.link_handler import ADMLink
 
 # show info
 import logging
-logging.addLevelName("Note_Handler")
+logging.addLevelName(level=1, levelName="Note_Handler")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 

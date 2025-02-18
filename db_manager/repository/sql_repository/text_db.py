@@ -8,7 +8,7 @@ from system_data.sql_tables_data import Text
 
 # show info
 import logging
-logging.addLevelName("Text_Handler")
+logging.addLevelName(level=1, levelName="Text_Handler")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 

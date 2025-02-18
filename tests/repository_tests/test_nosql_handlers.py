@@ -5,7 +5,7 @@ from db_manager.repository.nosql_repository.config_db import ConfigDB
 
 from bson.objectid import ObjectId
 
-from db_manager.repository.db_services.sql_getter_service import DataGetter
+from db_manager.db_services.getter_service.sql_getter_service import DataGetter
 from db_manager.repository.nosql_repository.table_handler_db import TableHandlerDB
 
 class TestSettingsDB(unittest.TestCase):
