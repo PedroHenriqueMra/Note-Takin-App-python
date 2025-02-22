@@ -12,7 +12,7 @@ class TestDataClasses(unittest.TestCase):
         # instances with required values
         self.settings = Settings()
         self.text = Text("",None)
-        self.note = Note("",None)
+        self.note = Note(1,"",None)
         self.link = Link(0,0)
     
     def test_settings_type(self):

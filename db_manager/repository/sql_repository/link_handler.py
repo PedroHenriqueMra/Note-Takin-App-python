@@ -24,7 +24,7 @@ class ADMLink(IRepository[Link]):
         id VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
         text_id INTEGER,
         note_ids json INTEGER,
-        FOREIGN KEY(text_id) EFERENCES text(id),
+        FOREIGN KEY(text_id) REFERENCES text(id),
         FOREIGN KEY(note_ids) REFERENCES note(id)
         );"""
         self.cursor.execute(create_table_query)

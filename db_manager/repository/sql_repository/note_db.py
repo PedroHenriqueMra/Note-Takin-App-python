@@ -4,6 +4,7 @@ from utils.row_exists import row_exists
 
 from db_manager.repository.sql_repository.irepository import IRepository
 from ...connections.sqlite_connection import sqlite_conn
+from sqlite3 import Cursor
 
 from system_data.sql_tables_data import Note
 from db_manager.repository.sql_repository.link_handler import ADMLink
@@ -15,20 +16,20 @@ logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
 class ADMNote(IRepository[Note]):
-    cursor = sqlite_conn.cursor()
 
     def __init__(self):
+        self.cursor:Cursor = sqlite_conn.cursor()
         create_table_query = """
         CREATE TABLE IF NOT EXISTS note (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         linked_text_id INTEGER NOT NULL,
-        FOREIGN KEY(linked_text_id) REFERENCES text(id),
         type VARCHAR(5) NOT NULL,
         reference VARCHAR(50) NOT NULL,
         content TEXT,
         create_date DATETIME NOT NULL,
-        edit_date DATETIME NOT NULL
-        );"""
+        edit_date DATETIME NOT NULL,
+        FOREIGN KEY(linked_text_id) REFERENCES text(id)
+        )"""
         self.cursor.execute(create_table_query)
 
     def add_row(self, values:Note) -> Note|None:
@@ -48,7 +49,9 @@ class ADMNote(IRepository[Note]):
     def get_row(self, id:int) -> Optional[Note]:
         query = "SELECT * FROM note WHERE id=?"
         data = self.cursor.execute(query, (id,)).fetchone()
-        if query == None:
+        try:
+            row = query[1]
+        except IndexError:
             return None
 
         return Note(linked_text_id=data["linked_text"], reference=data["reference"], content=data["content"], create_date=data["create_date"], edit_date=data["edit_date"])

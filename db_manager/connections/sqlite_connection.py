@@ -27,7 +27,6 @@ class SqliteDB():
     def get_connection(self) -> Connection:
         if self.connection == None:
             self.connection = sqlite3.connect(self.connection_string, autocommit=True)
-            
         
         self.config_sqlite()
         return self.connection

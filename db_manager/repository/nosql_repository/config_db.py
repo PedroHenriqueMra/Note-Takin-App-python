@@ -78,9 +78,9 @@ class ConfigDB:
                         parsed_settings.get_dict_structure(),
                         key_sett)
                     filter = {"_id":settings_id}
-                    new_value = {str(key_path):val_sett}
+                    new_value = {"$set":{str(key_path):val_sett}}
 
-                    change = collection.update_one(filter, new_value, upsert=False)
+                    change = collection.update_one(filter=filter, update=new_value, upsert=False)
                     if change != None:
                         logging.info(f"{key_sett} Modified successfuly")
 

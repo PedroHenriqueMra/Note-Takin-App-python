@@ -4,7 +4,7 @@ from db_manager.connections.sqlite_connection import sqlite
 import ast
 
 class DataGetter(IGetterService):
-    def get_link_data(self, link_id:str) -> dict:
+    def get_link_data(self, link_id:str) -> dict | None:
         with sqlite.db_connection(change=False) as cur:
             query = "SELECT * FROM link WHERE id=?"
             data = cur.execute(query, (link_id,)).fetchone()
@@ -18,7 +18,7 @@ class DataGetter(IGetterService):
                 "note_ids": note_ids
             }
 
-    def get_text_data(self, text_id:int) -> dict:
+    def get_text_data(self, text_id:int) -> dict | None:
         with sqlite.db_connection(change=False) as cur:
             query = "SELECT * FROM text WHERE id=?"
             data = cur.execute(query, (text_id,)).fetchone()
@@ -34,7 +34,7 @@ class DataGetter(IGetterService):
                 "edit_date": data["edit_date"]
             }
     
-    def get_notes_data(self, note_ids:list) -> list:
+    def get_notes_data(self, note_ids:list) -> list | None:
         with sqlite.db_connection(change=False) as cur:
             query = "SELECT * FROM note WHERE id=?"
             for id in note_ids:

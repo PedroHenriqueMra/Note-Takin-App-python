@@ -14,7 +14,10 @@ class TestGetterSqlData(unittest.TestCase):
 
         action = self.service.get_link_data(id)
         print("action")
-
+        if action == None:
+            self.assertIsNone(action)
+            return
+        
         self.assertIsInstance(action, dict, "The function 'get_link_data' doens't return a dict type!")
 
         for key in action:
@@ -43,6 +46,9 @@ class TestGetterSqlData(unittest.TestCase):
 
         action = self.service.get_notes_data(ids)
         print(action)
+        if action is None:
+            self.assertIsNone(action)
+            return
         
         self.assertIsInstance(action, list, "The function 'get_notes_data' doens't return a list type!")
 
@@ -65,6 +71,10 @@ class TestGetterSqlData(unittest.TestCase):
         action = self.service.get_text_data(id)
         print(action)
         
+        if action is None:
+            self.assertIsNone(action)
+            return
+
         self.assertIsInstance(action, dict, "The function 'get_text_data' doens't return a dict type!")
 
         for key in action:

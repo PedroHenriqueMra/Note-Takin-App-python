@@ -3,6 +3,8 @@ from utils.date_now import current_date
 
 from db_manager.repository.sql_repository.irepository import IRepository
 from ...connections.sqlite_connection import sqlite_conn
+from sqlite3 import Cursor
+
 from db_manager.repository.sql_repository.link_handler import ADMLink
 from system_data.sql_tables_data import Text
 
@@ -13,9 +15,9 @@ logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
 class ADMText(IRepository[Text]):
-    cursor = sqlite_conn.cursor()
 
     def __init__(self):
+        self.cursor:Cursor = sqlite_conn.cursor()
         # create table
         table = """CREATE TABLE IF NOT EXISTS text (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,9 +41,11 @@ class ADMText(IRepository[Text]):
 
     def get_row(self, id:int) -> Optional[Text]:
         query = self.cursor.execute("SELECT * FROM text WHERE id=?", (id,)).fetchone()
-        if query is None:
+        try:
+            row = query[1]
+        except IndexError:
             return None
-        
+
         return Text(title=query["title"], content=query["content"], create_date=query["create_date"], edit_date=query["edit_date"])
 
 

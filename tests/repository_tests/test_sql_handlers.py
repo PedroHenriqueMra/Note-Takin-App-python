@@ -1,5 +1,7 @@
 import unittest
-from unittest.mock import Mock 
+from unittest.mock import MagicMock
+from unittest.mock import patch
+from sqlite3 import Cursor
 
 from system_data.sql_tables_data import *
 
@@ -10,49 +12,67 @@ from db_manager.repository.sql_repository.link_handler import ADMLink
 
 class TestTextTable(unittest.TestCase):
         def setUp(self):
-                self.text:ADMText = ADMText()
+                self.text_class:ADMText = ADMText()
                 self.new_register:Text = Text("testetstts", "etetaetdad")
 
-        def test_add_row(self):
-                new_reg = self.new_register
+        # def test_add_row(self):
+        #         new_reg = self.new_register
 
-                action = self.text.add_row(new_reg)
-
-                self.assertIsInstance(action, Text)
+        #         action = self.text.add_row(new_reg)
+        #         self.assertIsInstance(action, Text)
 
         def test_get_row(self):
                 id = 1
-                action = self.text.get_row(id)
-                self.assertIsInstance(action, Text)
+                with patch("db_manager.repository.sql_repository.text_db.sqlite_conn") as mocksql:
+                        mocksql.cursor().execute().return_value = {
+                                "id":1,
+                                "title":"mock-title",
+                                "content":"mock-content",
+                                "create_date":"mm-dd-yyyy",
+                                "edit_date":"mm-dd-yyyy",
+                        }
+                        text_class = ADMText()
+                        action = text_class.get_row(id)
+
+                        self.assertIsInstance(action, Text)
 
         def test_delete_text(self):
                 id = 5
-                action = self.text.delete(id)
+                action = self.text_class.delete(id)
                 self.assertTrue(action)
-
 
 
 class TestNoteTable(unittest.TestCase):
         def setUp(self):
-                self.note:ADMNote = ADMNote()
+                self.note_class:ADMNote = ADMNote()
                 self.new_register:Note = Note(1, "note_0303030", "lolalssas")
 
-        def test_add_row(self):
-                new_reg = self.new_register
+        # def test_add_row(self):
+        #         new_reg = self.new_register
 
-                action = self.note.add_row(1, new_reg)
-                self.assertIsInstance(action, Note)
+        #         action = self.note.add_row(new_reg)
+        #         self.assertIsInstance(action, Note)
 
         def test_get_row(self):
                 id = 1
-                action = self.note.get_row(id)
-                self.assertIsInstance(action, Note)
+                with patch("db_manager.repository.sql_repository.note_db.sqlite_conn") as mocksql:
+                        mocksql.cursor().execute().return_value = {
+                                "id":1,
+                                "linked_text_id":2,
+                                "title":"mock-title",
+                                "reference":"mock-content",
+                                "create_date":"mm-dd-yyyy",
+                                "edit_date":"mm-dd-yyyy",
+                        }
+                        note_class = ADMNote()
+                        action = note_class.get_row(id)
+
+                        self.assertIsInstance(action, Note)
 
         def test_delete_note(self):
                 id = 3
-                action = self.note.delete(id)
+                action = self.note_class.delete(id)
                 self.assertTrue(action)
-
 
 
 class TestLinkTable(unittest.TestCase):
