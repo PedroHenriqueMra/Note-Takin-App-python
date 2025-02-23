@@ -2,11 +2,14 @@ import sqlite3
 from sqlite3 import Connection
 from contextlib import contextmanager
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class SqliteDB():
 
     def __init__(self):
-        self.connection_string:str = "tststst.db"
+        self.connection_string:str = os.getenv("DB_SQLITE_FILE")
         self.connection:Connection = None
         
 

@@ -5,10 +5,11 @@ from db_manager.connections.mgdb_connection import mongodb
 
 from exceptions.tab_not_exists import TableNotExistsException
 
-import logging
-
 from system_data.change_data import Change
+from utils.dictsetter import *
 from utils.row_exists import row_exists
+
+import logging
 logging.addLevelName("change_service")
 logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
@@ -37,7 +38,10 @@ class ChangeService():
     def insert_query(self, change:Change) -> list | None:
         self.table_data["changes"]["changed"] = True
         
+        change_scripts = self.table_data["changes"][change.table_type]["change_scripts"]
 
+        new_script_list = self.replace_change_object(change_scripts)
+        dictSetter(self.table_data, f"changes/{change.table_type}/change_scripts", new_script_list)
 
 
 
@@ -46,6 +50,15 @@ class ChangeService():
         
     def delete_query(self, change:Change) -> list | None:
         self.table_data["changes"]["changed"] = True
+
+    def replace_change_object(self, list:list, change_data:Change) -> list:
+        for ind, ch in enumerate(list):
+            if isinstance(type(change_data), type(ch)):
+                if ch.change_starts == change_data.change_starts:
+                    list[ind] = change_data
+        
+        return list
+
 
     def save(self) -> None:
         pass

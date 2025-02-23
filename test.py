@@ -69,6 +69,6 @@ if __name__ == "__main__":
     # runner.run(suite())
     
     # Run all tests
-    tests = suite_all("repository_tests")
+    tests = suite_all(route=True)
     for test in tests:
         runner.run(test)

@@ -3,11 +3,14 @@ from bson.objectid import ObjectId
 from contextlib import contextmanager
 from pymongo.database import Database
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class MongoDBConnection:
     def __init__(self):
-        self.connection_string = "mongodb://127.0.0.1:27017"
-        self.collection_name = "note_takin_database"
+        self.connection_string = os.getenv("DB_LOCALHOST")
+        self.collection_name = os.getenv("DB_COLLECTION_NAME")
         self.client_connection = None
 
     @contextmanager

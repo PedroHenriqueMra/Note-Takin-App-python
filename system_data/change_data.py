@@ -68,7 +68,6 @@ class ChangeUpdate(Change):
         WHERE id = ?"""
         return query, (self.newContent, self.newContent, self.table_id)
 
-
 class ChangeInsert(Change):
     def __init__(self, table_type:str, table_id:int, change_starts:int, change_ends:int, new_content:str):
         self.newContent:str = new_content

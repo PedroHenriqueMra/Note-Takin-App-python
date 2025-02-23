@@ -23,7 +23,7 @@ class TestChangeData(unittest.TestCase):
         self.assertIsInstance(obj.change_starts, int)
         self.assertIsInstance(obj.change_ends, int)
         self.assertIsInstance(obj.newContent, str)
-
+        
 
 class TestChangeDeleteData(unittest.TestCase):
     def setUp(self):
@@ -31,11 +31,11 @@ class TestChangeDeleteData(unittest.TestCase):
         table_id = 1
         change_starts = 2
         change_ends = 4
-        self.change:Change = ChangeDelete(table_type, table_id, change_starts, change_ends)
+        self.change:ChangeDelete = ChangeDelete(table_type, table_id, change_starts, change_ends)
 
     def test_get_query(self):
         change = self.change
-        query_expected = f"""
+        query_expected = (f"""
         UPDATE {change.table_type}
         SET content =
             CASE
@@ -44,11 +44,11 @@ class TestChangeDeleteData(unittest.TestCase):
                 ELSE
                     SUBSTR(content, 1, {change.change_starts})|| SUBSTR(content, {change.change_ends+1})
             END
-        WHERE id = ?"""
+        WHERE id = ?""", (change.table_id,))
         get_query = self.change.gen_change_script()
 
-        print(f"Delete script:\n{get_query}")
-        self.assertEqual(get_query, query_expected[0])
+        print(f"\nDelete script:\n{get_query[0]}\nExpected:\n{query_expected[0]}")
+        self.assertEqual(get_query, query_expected)
 
 
 class TestChangeUpdateData(unittest.TestCase):
@@ -58,11 +58,11 @@ class TestChangeUpdateData(unittest.TestCase):
         change_starts = 2
         change_ends = 4
         new_content = "new content"
-        self.change:Change = ChangeUpdate(table_type, table_id, change_starts, change_ends, new_content)
+        self.change:ChangeUpdate = ChangeUpdate(table_type, table_id, change_starts, change_ends, new_content)
 
     def test_get_query(self):
         change = self.change
-        query_expected = f"""
+        query_expected = (f"""
         UPDATE {change.table_type}
         SET content =
             CASE
@@ -71,11 +71,11 @@ class TestChangeUpdateData(unittest.TestCase):
                 ELSE
                     SUBSTR(content, 1, {change.change_starts}) || ? || SUBSTR(content, {change.change_ends+1})
             END
-        WHERE id = ?"""
+        WHERE id = ?""", (change.newContent, change.newContent, change.table_id))
         get_query = self.change.gen_change_script()
 
-        print(f"Update script:\n{get_query}")
-        self.assertEqual(get_query, query_expected[0])
+        print(f"\nUpdate script:\n{get_query[0]}\nExpected:\n{query_expected[0]}")
+        self.assertEqual(get_query, query_expected)
 
 
 class TestChangeInsertData(unittest.TestCase):
@@ -85,15 +85,15 @@ class TestChangeInsertData(unittest.TestCase):
         change_starts = 2
         change_ends = 4
         new_content = "new content"
-        self.change:Change = ChangeInsert(table_type, table_id, change_starts, change_ends, new_content)
+        self.change:ChangeInsert = ChangeInsert(table_type, table_id, change_starts, change_ends, new_content)
 
     def test_get_query(self):
         change = self.change
         query_expected = f"INSERT INTO {change.table_type} (content) VALUES({change.newContent})"
         get_query = self.change.gen_change_script()
 
-        print(f"Insert script:\n{get_query}")
-        self.assertEqual(get_query, query_expected[0])
+        print(f"\nInsert script:\n{get_query[0]}\nExpected:\n{query_expected[0]}")
+        self.assertEqual(get_query, query_expected)
 
 
 if __name__ == "__main__":

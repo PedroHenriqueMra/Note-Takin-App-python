@@ -1,6 +1,7 @@
 import unittest
 
 from utils.find_dict import find_keypath
+from utils.dictsetter import *
 
 
 class TestUtils(unittest.TestCase):
@@ -102,3 +103,24 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(real_call2, expected_real_test2)
         self.assertEqual(real_call3, expected_real_test3)
         self.assertEqual(real_call4, expected_real_test4)
+
+    def test_dict_getter(self):
+        obj = {"l1":{"l2":{"l3":"value"}}}
+        path = "l1/l2/l3"
+        expected = {"l3":"value"}
+
+        action = dictGetter(obj, path)
+        print(f"\nDICT GETTER: {action}")
+
+        self.assertEqual(action, expected)
+
+    def test_dict_setter(self):
+        obj = {"l1":{"l2":{"l3":{"l4":{"l5":"final_value"}}}}}
+        path = "l1/l2/l3/l4/l5"
+        value = "value_changed"
+        expected = {"l1":{"l2":{"l3":{"l4":{"l5":"value_changed"}}}}}
+
+        dictSetter(obj, path, value)
+        print(f"\nDICT CHANGED: {obj}")
+
+        self.assertEqual(obj, expected)
