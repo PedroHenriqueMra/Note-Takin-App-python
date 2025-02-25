@@ -32,6 +32,7 @@ class TableHandlerDB():
         if len(get_text) or len(get_notes) == 0:
             return None
 
+        
         data = {
             "content": {
                 "text": get_text,
@@ -43,10 +44,13 @@ class TableHandlerDB():
                     "changed":False,
                     "change_scripts": []
                     },
-                "notes":{
-                    "changed":False,
-                    "change_scripts": []
+                "notes": [
+                    {
+                        "id":dict_note["id"],
+                        "changed":False,
+                        "change_scripts":[]
                     }
+                    for dict_note in get_notes]
             },
             "last_view": current_date()
         }

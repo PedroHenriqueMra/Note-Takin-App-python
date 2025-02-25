@@ -2,6 +2,7 @@ from bson.objectid import ObjectId
 import ast
 
 from db_manager.connections.mgdb_connection import mongodb
+from db_manager.connections.sqlite_connection import sqlite
 
 from exceptions.tab_not_exists import TableNotExistsException
 
@@ -15,8 +16,8 @@ logging.BASIC_FORMAT = "\n%(levelname)s:%(name)s:%(message)s"
 
 
 class ChangeService():
-    def __init__(self, table_id:ObjectId) -> None:
-        self.table_id:ObjectId = table_id
+    def __init__(self, table_id:ObjectId|str) -> None:
+        self.table_id:ObjectId | str = table_id
         self.table_data:dict = dict()
         
         try:
@@ -35,30 +36,45 @@ class ChangeService():
             self.table_data = ast.literal_eval(table)
     
 
-    def insert_query(self, change:Change) -> list | None:
-        self.table_data["changes"]["changed"] = True
-        
-        change_scripts = self.table_data["changes"][change.table_type]["change_scripts"]
-
-        new_script_list = self.replace_change_object(change_scripts)
-        dictSetter(self.table_data, f"changes/{change.table_type}/change_scripts", new_script_list)
-
-
-
-    def update_query(self, change:Change) -> list | None:
-        self.table_data["changes"]["changed"] = True
-        
-    def delete_query(self, change:Change) -> list | None:
-        self.table_data["changes"]["changed"] = True
-
-    def replace_change_object(self, list:list, change_data:Change) -> list:
-        for ind, ch in enumerate(list):
-            if isinstance(type(change_data), type(ch)):
-                if ch.change_starts == change_data.change_starts:
-                    list[ind] = change_data
+    def __replace_change_object(self, list:list, change_data:Change) -> list:
+        for indx, chang in enumerate(list):
+            if isinstance(type(change_data), type(chang)):
+                if chang.change_starts == change_data.change_starts:
+                    list[indx] = change_data.gen_change_script()
         
         return list
 
+    def include_query(self, change:Change) -> list | None:
+        self.table_data["changes"]["changed"] = True
+
+        if change.table_type == "note":
+            indx = None
+            for note in self.table_data["changes"]["notes"]:
+                if note == change.table_id:
+                    indx = change.table_id
+            
+            if indx == None:
+                return
+            
+            change_scripts = self.table_data["changes"][change.table_type][indx]["change_scripts"]
+            self.table_data["changes"][change.table_type][indx]["change_scripts"].append(change.gen_change_script())
+        else:
+            self.table_data["changes"][change.table_type]["change_scripts"].append(change.gen_change_script())
+            change_scripts = self.table_data["changes"][change.table_type]["change_scripts"]
+
+        new_script_list = self.__replace_change_object(change_scripts, change)
+        dictSetter(self.table_data, f"changes/{change.table_type}/change_scripts", new_script_list)
+
+        return new_script_list
 
     def save(self) -> None:
-        pass
+        with sqlite.db_connection() as cur:
+            # loop to txt changes
+            for txt in self.table_data["changes"]["text"]["change_scripts"]:
+                cur.execute(txt["change_scripts"])
+           
+            # loop to note changes
+            for notes in self.table_data["changes"]["notes"]:
+                for n in notes:
+                    cur.execute(n["change_scripts"])
+
