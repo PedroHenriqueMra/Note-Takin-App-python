@@ -3,20 +3,12 @@ from exceptions.invalid_type import InvalidTableTypeException
 
 
 class Change(ABC):
-    def __init__(self, table_type:str, table_id:int, change_starts:int, change_ends:int):    
+    def __init__(self, table_type:str, table_id:int):    
         self.__table_type:str = table_type
         self.table_id:int = table_id
-        self.change_starts:int = change_starts
-        self.change_ends:int = change_ends
         
         if self.__table_type not in ["text", "note"]:
             raise InvalidTableTypeException(f"The type ({self.table_type}) is not allowed.")
-        
-        if change_ends <= change_starts:
-            # Invert values
-            self.change_starts = change_ends
-            self.change_ends = change_starts
-
 
     @property
     def table_type(self) -> str:
@@ -37,6 +29,17 @@ class Change(ABC):
         pass
 
 class ChangeDelete(Change):
+    def __init__(self, table_type:str, table_id:int, change_starts:int, change_ends:int):
+        self.change_starts:int = change_starts
+        self.change_ends:int = change_ends
+
+        if change_ends <= change_starts:
+            # Invert values
+            self.change_starts = change_ends
+            self.change_ends = change_starts
+
+        super().__init__(table_type, table_id)
+
     def gen_change_script(self) -> tuple:
         query = f"""
         UPDATE {self.table_type}
@@ -53,7 +56,14 @@ class ChangeDelete(Change):
 class ChangeUpdate(Change):
     def __init__(self, table_type:str, table_id:int, change_starts:int, change_ends:int, new_content:str):
         self.newContent:str = new_content
-        super().__init__(table_type=table_type, table_id=table_id, change_starts=change_starts, change_ends=change_ends)
+        self.change_starts:int = change_starts
+        self.change_ends:int = change_ends
+        if change_ends <= change_starts:
+            # Invert values
+            self.change_starts = change_ends
+            self.change_ends = change_starts
+
+        super().__init__(table_type, table_id)
 
     def gen_change_script(self) -> tuple:
         query = f"""
@@ -66,13 +76,13 @@ class ChangeUpdate(Change):
                     SUBSTR(content, 1, {self.change_starts}) || ? || SUBSTR(content, {self.change_ends+1})
             END
         WHERE id = ?"""
-        return query, (self.newContent, self.newContent, self.table_id)
+        return query, (self.newContent, self.newContent, self.table_id,)
 
 class ChangeInsert(Change):
-    def __init__(self, table_type:str, table_id:int, change_starts:int, change_ends:int, new_content:str):
+    def __init__(self, table_type:str, table_id:int, new_content:str):
         self.newContent:str = new_content
-        super().__init__(table_type=table_type, table_id=table_id, change_starts=change_starts, change_ends=change_ends)
+        super().__init__(table_type, table_id)
 
     def gen_change_script(self) -> tuple:
-        query = "INSERT INTO {} (content) VALUES({})".format(self.table_type, self.newContent)
-        return query
+        query = f"UPDATE {self.table_type} SET content = content || ?"
+        return query, (self.newContent,)
