@@ -4,6 +4,8 @@ import pprint
 
 from db_manager.db_services.change_service.change_service import ChangeService
 
+from bson.objectid import ObjectId
+
 from system_data.sql_tables_data import Text, Note
 from system_data.change_data import ChangeDelete
 from system_data.change_data import ChangeUpdate
@@ -35,22 +37,22 @@ class TestChangeService(unittest.TestCase):
             },
             "last_view": current_date()
         }
-        
-        self.service = ChangeService("table_id")
+
+        self.service = ChangeService(ObjectId().binary)
         self.service.table_data = table_data
 
     def test_include_query_text_field(self):
         text_change_insert = ChangeInsert("text", 1, new_content=".This is my new content!")
-        text_change_update = ChangeUpdate("text", 1, 1, 7, "(The 'content' text was changed!)")
         text_change_delete = ChangeDelete("text", 1, 33,  40)
+        text_change_update = ChangeUpdate("text", 1, 1, 7, "(The 'content' text was changed!)")
 
         action = self.service.include_query(text_change_insert)
-        action + self.service.include_query(text_change_update)
         action + self.service.include_query(text_change_delete)
+        action + self.service.include_query(text_change_update)
 
         self.assertEqual(action[0].gen_change_script(), text_change_insert.gen_change_script())
-        self.assertEqual(action[1].gen_change_script(), text_change_update.gen_change_script())
-        self.assertEqual(action[2].gen_change_script(), text_change_delete.gen_change_script())
+        self.assertEqual(action[1].gen_change_script(), text_change_delete.gen_change_script())
+        self.assertEqual(action[2].gen_change_script(), text_change_update.gen_change_script())
         print(f"TABLE DATA FROM TEXT TEST:")
         print(pprint.pprint(self.service.table_data))
 
@@ -129,7 +131,7 @@ class TestChangeService(unittest.TestCase):
         print(f"script_list (note): {sript_list_note}")
         print(f"script_list (txt): {script_list_txt}")
 
-        self.service.save_one()
+        self.service.save()
 
         with sqlite.db_connection() as cur:
             print("TEXT CONTENT:")
