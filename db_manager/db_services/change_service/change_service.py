@@ -105,21 +105,22 @@ class ChangeService():
 
         return script_list
     
-
     def __organize_orderScripts(self, script_list:list) -> list:
+        # Sort script list to execute the queries that changes the text at the end first, and after execute queries that starts at text begins. This is so that the queries that will be executed first do not harm the queries that will be executed later, because the queries will change the text index as well, which will create chaos when executing the changes.
+        
         inserts = list()
         rest_objs = list()
         for item in script_list:
-            print(f"type obj::: {type(item)}")
             if isinstance(item, ChangeInsert):
                 inserts.append(item)
                 continue
             
-            print(f"type que entrou no rest::: {type(item)}")
             rest_objs.append(item)
 
-        rest_objs.sort(key=lambda x: x.change_starts)
-        return rest_objs + inserts
+        # ORGANIZE TO: inserts first, after deletes and updates in descending order
+        rest_objs.sort(key=lambda x: x.change_starts, reverse=True)
+        return inserts + rest_objs 
+
 
     def save(self) -> None:
         self.__desableAll_changed_statment()
@@ -154,14 +155,17 @@ class ChangeService():
         with sqlite.db_connection() as cur:
             if all or note_ids is None:
                 txt_content = cur.execute("SELECT * FROM text WHERE id = ?", (self.table_data["content"]["text"]["id"],)).fetchone()
-                txt_content = {
-                    "id":txt_content["id"],
-                    "type":txt_content["type"],
-                    "title":txt_content["title"],
-                    "content":txt_content["content"],
-                    "create_date":txt_content["create_date"],
-                    "edit_date": txt_content["edit_date"]}
-                self.table_data["content"]["text"] = txt_content
+                try:
+                    txt_content = {
+                        "id":txt_content["id"],
+                        "type":txt_content["type"],
+                        "title":txt_content["title"],
+                        "content":txt_content["content"],
+                        "create_date":txt_content["create_date"],
+                        "edit_date": txt_content["edit_date"]}
+                    self.table_data["content"]["text"] = txt_content
+                except:
+                    pass
 
             if all or note_ids is not None:
                 if all:
@@ -170,30 +174,31 @@ class ChangeService():
                         note_ids.append(note_id["id"])
                 
                 for n_id in note_ids:
-                    note_content = cur.execute("SELECT * FROM note WHERE id = ?", (n_id,))
-                    note_content = {
-                        "id": note_content["id"],
-                        "type": note_content["type"],
-                        "reference": note_content["reference"],
-                        "content": note_content["content"],
-                        "create_date": note_content["create_date"],
-                        "edit_date": note_content["edit_date"]
-                    }
-                    if note_content["id"] is None:
+                    note_content = cur.execute("SELECT * FROM note WHERE id = ?", (n_id,)).fetchone()
+                    try:
+                        note_content = {
+                            "id": note_content["id"],
+                            "type": note_content["type"],
+                            "reference": note_content["reference"],
+                            "content": note_content["content"],
+                            "create_date": note_content["create_date"],
+                            "edit_date": note_content["edit_date"]
+                        }
+                    except:
                         continue
-
+                    
                     for index, note in enumerate(self.table_data["content"]["notes"]):
-                        if  note["id"] == n_id:
+                        if note["id"] == n_id:
                             self.table_data["content"]["notes"][index] = note_content
                             break
 
-        with mongodb.context_database() as db:
-            connection_string = os.getenv("TABLE_COLLACTION")
-            database = db[connection_string]
-            database.update_one(
-                filter={"_id": self.table_id},
-                update={"$set":str(self.table_data)},
-                upsert=False)
+        # with mongodb.context_database() as db:
+        #     connection_string = os.getenv("TABLE_COLLACTION")
+        #     database = db[connection_string]
+        #     database.update_one(
+        #         filter={"_id": self.table_id},
+        #         update={"$set":str(self.table_data)},
+        #         upsert=False)
 
     def __desableAll_changed_statment(self) -> None:
         self.table_data["changes"]["changed"] = False

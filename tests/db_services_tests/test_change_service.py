@@ -20,8 +20,31 @@ class TestChangeService(unittest.TestCase):
     def setUp(self):
         table_data = {
             "content": {
-                "text": Text("title_test", "content that will be changed"),
-                "notes": [Note(1, "ref_lorem",None),Note(1, "ref_lorem",None),Note(1, "ref_lorem",None)]
+                "text": {"id": 1,
+                        "type" :"text",
+                        "title": "text-title",
+                        "content": "content-test",
+                        "create_date": "mm-dd-yyyy ss:mm:hh",
+                        "edit_date": "mm-dd-yyyy ss:mm:hh"},
+                "notes": [
+                    {"id":1,
+                    "type":"note",
+                    "reference":"test-reference",
+                    "content":"test-content",
+                    "create_date":"mm-dd-yyyy ss:mm:hh",
+                    "edit_date":"mm-dd-yyyy ss:mm:hh"},
+                    {"id":1,
+                    "type":"note",
+                    "reference":"test-reference",
+                    "content":"test-content",
+                    "create_date":"mm-dd-yyyy ss:mm:hh",
+                    "edit_date":"mm-dd-yyyy ss:mm:hh"},
+                    {"id":1,
+                    "type":"note",
+                    "reference":"test-reference",
+                    "content":"test-content",
+                    "create_date":"mm-dd-yyyy ss:mm:hh",
+                    "edit_date":"mm-dd-yyyy ss:mm:hh"}]
             },
             "changes": {
                 "changed": False,
@@ -42,17 +65,17 @@ class TestChangeService(unittest.TestCase):
         self.service.table_data = table_data
 
     def test_include_query_text_field(self):
-        text_change_insert = ChangeInsert("text", 1, new_content=".This is my new content!")
         text_change_delete = ChangeDelete("text", 1, 33,  40)
         text_change_update = ChangeUpdate("text", 1, 1, 7, "(The 'content' text was changed!)")
+        text_change_insert = ChangeInsert("text", 1, new_content=".This is my new content!")
 
-        action = self.service.include_query(text_change_insert)
-        action + self.service.include_query(text_change_delete)
-        action + self.service.include_query(text_change_update)
+        self.service.include_query(text_change_insert)
+        self.service.include_query(text_change_delete)
+        action = self.service.include_query(text_change_update)
 
-        self.assertEqual(action[0].gen_change_script(), text_change_insert.gen_change_script())
-        self.assertEqual(action[1].gen_change_script(), text_change_delete.gen_change_script())
-        self.assertEqual(action[2].gen_change_script(), text_change_update.gen_change_script())
+        self.assertEqual(action[0].gen_change_script(), text_change_delete.gen_change_script())
+        self.assertEqual(action[1].gen_change_script(), text_change_update.gen_change_script())
+        self.assertEqual(action[2].gen_change_script(), text_change_insert.gen_change_script())
         print(f"TABLE DATA FROM TEXT TEST:")
         print(pprint.pprint(self.service.table_data))
 
@@ -62,13 +85,13 @@ class TestChangeService(unittest.TestCase):
         note_change_update = ChangeUpdate("note", 1, 1, 5, "I changed this content!")
         note_change_delete = ChangeDelete("note", 1, 1, 3)
 
-        action = self.service.include_query(note_change_insert)
-        action + self.service.include_query(note_change_update)
-        action + self.service.include_query(note_change_delete)
+        self.service.include_query(note_change_insert)
+        self.service.include_query(note_change_update)
+        action = self.service.include_query(note_change_delete)
 
-        self.assertEqual(action[0].gen_change_script(), note_change_insert.gen_change_script())
-        self.assertEqual(action[1].gen_change_script(), note_change_update.gen_change_script())
-        self.assertEqual(action[2].gen_change_script(), note_change_delete.gen_change_script())
+        self.assertEqual(action[0].gen_change_script(), note_change_update.gen_change_script())
+        self.assertEqual(action[1].gen_change_script(), note_change_delete.gen_change_script())
+        self.assertEqual(action[2].gen_change_script(), note_change_insert.gen_change_script())
         print(f"TABLE DATA FROM NOTES TEST:")
         print(pprint.pprint(self.service.table_data))
 

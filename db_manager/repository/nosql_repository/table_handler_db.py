@@ -32,7 +32,6 @@ class TableHandlerDB():
         if len(get_text) or len(get_notes) == 0:
             return None
 
-        
         data = {
             "content": {
                 "text": get_text,
