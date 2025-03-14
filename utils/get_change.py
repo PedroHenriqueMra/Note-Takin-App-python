@@ -24,17 +24,41 @@ class Differ:
         return change_objects
     
 
-    def __get_ChangeInfo(self):
-        data = list()
+    def __get_ChangeInfo(self) -> list:
         diff = difflib.ndiff(self.str_1, self.str_2)
+        data = list()
         change_starts = None
         new_content = ""
+        last_signal = None
+        change_type = None
+
+        def create_object(end_index:int) -> None:
+            nonlocal change_starts, new_content, change_type 
+            if change_starts is not None:
+                obj = {
+                    "type": change_type,
+                    "change_starts": change_starts,
+                    "change_ends": end_index,
+                }
+
+                if change_type in ("insert", "update"):
+                    obj["new_content"] = new_content
+
+                data.append(obj)
+                change_starts = None
+                new_content = ""
 
         for i, dff in enumerate(diff):
             code = dff[0]
             char = dff[2]
 
             if code in ("+", "-"):
+                if last_signal is None:
+                    last_signal = code
+
+                if last_signal is not None and code != last_signal:
+                    create_object(i+1)
+
                 if change_starts is None:
                     change_starts = i+1
                     if code == "+":
@@ -42,33 +66,17 @@ class Differ:
                             change_type = "insert"
                         else:
                             change_type = "update"
-                        new_content.join(char)
+                        new_content += char
                     else:
                         change_type = "delete"
+
                 continue
-
-            if change_starts is not None:
-                if change_type == "delete":
-                    obj = {
-                        "type": change_type,
-                        "change_starts": change_starts,
-                        "change_ends": i+1,
-                    }
-                else:
-                    obj = {
-                        "type": change_type,
-                        "change_starts": change_starts,
-                        "change_ends": i+1,
-                        "new_content": new_content,
-                    }
-
-                change_starts = None
-                new_content = ""
-                data.append(obj)
+            
+            create_object(i+1)
 
         return data
 
-    def __get_object(self, data):
+    def __get_object(self, data:dict) -> Change:
         if data["type"] == "delete":
             return ChangeDelete(
                 table_type=self.table_type,
@@ -93,5 +101,3 @@ class Differ:
 
     def __compact(self) -> ChangeUpdate:
         pass
-
-    
